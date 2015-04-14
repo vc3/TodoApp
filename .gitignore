@@ -1,14 +1,5 @@
-# Build Folders (you can keep bin if you'd like, to store dlls and pdbs)
 bin
 obj
-
-# mstest test results
 TestResults
-
-# solution user settings
 *.suo
 *.user
-
-# SQL Server CE database file
-*.sdf
-

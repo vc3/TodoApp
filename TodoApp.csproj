@@ -170,9 +170,9 @@
     <Content Include="Scripts\board-sorting.js" />
     <Content Include="Scripts\board-styles.js" />
     <Content Include="Scripts\exoweb-jquery.dialog.js" />
+    <None Include="Scripts\jquery-1.7.2.intellisense.js" />
     <Content Include="Scripts\exoweb-msajax.js" />
     <Content Include="Scripts\exoweb-templates.htm" />
-    <Content Include="Scripts\jquery-1.7.2-vsdoc.js" />
     <Content Include="Scripts\jquery-1.7.2.js" />
     <Content Include="Scripts\jquery-1.7.2.min.js" />
     <Content Include="Scripts\jquery-ui-1.8.19.js" />

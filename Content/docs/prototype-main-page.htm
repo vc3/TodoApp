@@ -1,0 +1,182 @@
+﻿<style type="text/css">
+	body 
+	{
+		font-family: Corbel, Tahoma, Verdana;
+	}
+	.MsoNormal
+	{
+		margin: 1px;
+	}
+	.code
+	{
+		font-family: Consolas, Courier New, Sans-Serif;
+	}
+	.style1
+	{
+		width: 672px;
+	}
+</style>
+<body>
+	<p style="font-size: x-large;">
+		<strong>Prototype Main Page</strong>
+	</p>
+	<p>
+		Apps are not just code--they require great CSS and lightweight but effective images to get the message across.  These files typically live in a
+		<strong>content</strong> folder in MVC apps separate from the views they 
+		support.&nbsp; They are directly accessed by the browser and bypass the 
+		controller-based routing in MVC.</p>
+	<p>
+		For the purposes of this walkthrough we'll assume that we've gone through a design process and now have
+		access to images, css styles, and static HTML from which to build our app.
+	</p>
+	<p>
+		Our static prototype task board will end up looking something like this:
+	</p>
+	<p>
+		<img alt="" class="style1" src="prototype-ui.png" />
+	</p>
+	<hr />
+	<ol>
+		<li>Delete the <strong>content\themes</strong> folder created when adding the jQuery
+			UI NuGet package.</li>
+		<li>Copy required images and css to the <strong>content</strong> folder: <a href="content.zip">
+			content.zip</a></li>
+		<li>Copy additional scripts to the <strong>scripts</strong> folder: <a href="scripts.zip">
+			scripts.zip</a></li>
+
+		<!-- Shared/_Layout.cshtml -->
+		<li>Create a <strong>Shared</strong> folder under <strong>Views</strong>.</li>
+		<li>Add a view called <strong>_Layout.cshtml</strong> to the <strong>Shared</strong> folder.</li>
+		<li>Replace the contents of <strong>_Layout.cshtml</strong> with the following code snippet:
+			<div class="snippet">
+				<pre>
+&lt;!doctype html&gt; 
+&lt;!--[if lt IE 7 ]&gt; &lt;html class=&quot;no-js ie6&quot; lang=&quot;en&quot;&gt; &lt;![endif]--&gt; 
+&lt;!--[if IE 7 ]&gt;    &lt;html class=&quot;no-js ie7&quot; lang=&quot;en&quot;&gt; &lt;![endif]--&gt; 
+&lt;!--[if IE 8 ]&gt;    &lt;html class=&quot;no-js ie8&quot; lang=&quot;en&quot;&gt; &lt;![endif]--&gt; 
+&lt;!--[if (gte IE 9)|!(IE)]&gt;&lt;!--&gt; &lt;html class=&quot;no-js&quot; lang=&quot;en&quot;&gt; &lt;!--&lt;![endif]--&gt; 
+&lt;head&gt; 
+	&lt;meta charset=&quot;utf-8&quot;&gt; 
+	&lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge,chrome=1&quot;&gt; 
+	&lt;title&gt;TodoApp&lt;/title&gt;
+	&lt;meta name=&quot;description&quot; content=&quot;xAppify - your apps. your way.&quot;&gt; 
+	&lt;link rel=&quot;shortcut icon&quot; href=&quot;/favicon.ico&quot;&gt; 
+	&lt;link rel=&quot;stylesheet&quot; href=&quot;@Url.Content(&quot;~/content/appDefaultSkin.css?v=2&quot;)&quot;&gt;
+	&lt;link rel=&quot;stylesheet&quot; href=&quot;@Url.Content(&quot;~/content/jquery-ui/jquery-ui-1.8.19.custom.css&quot;)&quot;&gt;
+	@RenderSection(&quot;stylesheet&quot;, required: false)
+	&lt;script src=&quot;@Url.Content(&quot;~/scripts/modernizr-1.7.min.js&quot;)&quot;&gt;&lt;/script&gt;
+	&lt;script src=&quot;@Url.Content(&quot;~/scripts/jquery-1.7.2.min.js&quot;)&quot;&gt;&lt;/script&gt;
+	&lt;script src=&quot;@Url.Content(&quot;~/scripts/jquery-ui-1.8.19.min.js&quot;)&quot;&gt;&lt;/script&gt;
+	&lt;script src=&quot;@Url.Content(&quot;~/scripts/MicrosoftAjax.debug.js&quot;)&quot;&gt;&lt;/script&gt;
+	&lt;script src=&quot;@Url.Content(&quot;~/scripts/MicrosoftAjaxTemplates.debug.js&quot;)&quot;&gt;&lt;/script&gt;
+	&lt;script src=&quot;@Url.Content(&quot;~/scripts/exoweb-msajax.js?cachehash=&quot; + ExoWeb.CacheHash)&quot;&gt;&lt;/script&gt;
+	&lt;script src=&quot;@Url.Content(&quot;~/scripts/exoweb-jquery.dialog.js&quot;)&quot;&gt;&lt;/script&gt;
+	&lt;script src=&quot;@Url.Content(&quot;~/scripts/jquery.corner.js&quot;)&quot;&gt;&lt;/script&gt;
+	@RenderSection(&quot;scriptReferences&quot;, required: false)
+	
+
+&lt;/head&gt; 
+
+&lt;body xmlns:sys=&quot;javascript:Sys&quot;
+	xmlns:dataview=&quot;javascript:Sys.UI.DataView&quot;
+	xmlns:content=&quot;javascript:ExoWeb.UI.Content&quot;
+	xmlns:template=&quot;javascript:ExoWeb.UI.Template&quot;
+	xmlns:toggle=&quot;javascript:ExoWeb.UI.Toggle&quot;
+	xmlns:html=&quot;javascript:ExoWeb.UI.Html&quot;&gt; 
+	&lt;div id=&quot;main&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+		@RenderBody()
+		&lt;/div&gt;
+	&lt;/div&gt;
+	&lt;footer&gt;&lt;/footer&gt;
+&lt;/body&gt; 
+&lt;/html&gt;
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<!-- Home Controller -->
+		<li>Add a controller called <strong>HomeController.cs</strong> to the <strong>Controllers</strong> folder.</li>
+		<li>Replace the contents of <strong>HomeController.cs</strong> with the following code snippet:
+			<div class="snippet">
+				<pre>
+using System.Web.Mvc;
+using TodoApp.Models;
+
+namespace TodoApp.Controllers
+{
+	public class HomeController : Controller
+	{
+        [Authorize]
+		public ActionResult Index()
+		{
+            var user = (User) User.Identity;
+			return View(user);
+		}
+	}
+}
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<!-- Home/Index.cshtml -->
+		<li>Create a <strong>Home</strong> folder under <strong>Views</strong>.</li>
+		<li>Add a view called <strong>Index.cshtml</strong> to the <strong>Home</strong> folder.</li>
+		<li>Replace the contents of <strong>Index.cshtml</strong> with the following code snippet:
+			<div class="snippet">
+				<pre>
+@model TodoApp.Models.User
+
+@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Title = &quot;Index&quot;;
+}
+
+@section stylesheet {
+	&lt;link rel=&quot;stylesheet&quot; href=&quot;@Url.Content(&quot;~/content/board.css&quot;)&quot;&gt;
+}
+
+@section scriptReferences {
+&lt;script src=&quot;@Url.Content(&quot;~/scripts/board-styles.js&quot;)&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;@Url.Content(&quot;~/scripts/board-resize.js&quot;)&quot;&gt;&lt;/script&gt;
+}
+
+@*
+Main board interface
+*@
+
+&lt;div class=&quot;board&quot;&gt;
+	&lt;div class=&quot;board-title&quot;&gt;
+		&lt;span class=&quot;board-user&quot;&gt;User Name&lt;/span&gt;
+		&lt;a class=&quot;board-addlist&quot; href=&quot;#&quot; onclick=&quot;return false;&quot;&gt;Add a list..&lt;/a&gt;
+	&lt;/div&gt;
+	&lt;div class=&quot;board-background&quot;&gt;
+		&lt;div class=&quot;board-list&quot;&gt;
+			&lt;div class=&quot;board-list-title&quot;&gt;
+				&lt;strong&gt;List Name&lt;/strong&gt;
+				&lt;span class=&quot;board-deletelist&quot;&gt;&lt;/span&gt;
+			&lt;/div&gt;
+			&lt;div class=&quot;board-list-content sortable&quot;&gt;
+				&lt;div sys:class=&quot;High&quot;&gt;
+					&lt;div class=&quot;board-list-item&quot;&gt;
+						&lt;div class=&quot;board-list-item-text&quot;&gt;
+							&lt;span&gt;Item Description&lt;/span&gt;
+						&lt;/div&gt;
+						&lt;div class=&quot;board-list-item-age-description&quot;&gt;Item Age Description (eg, one minute ago)&lt;/div&gt;
+						&lt;span class=&quot;board-list-item-priority&quot;&gt;&lt;/span&gt;
+						&lt;a class=&quot;board-list-deleteitem&quot; href=&quot;#&quot; onclick=&quot;return false;&quot;&gt;&lt;/a&gt;
+					&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+			&lt;div class=&quot;board-list-additem&quot;&gt;
+				&lt;input type=&quot;text&quot; style=&quot;display:none;&quot; value=&quot;&quot; /&gt;
+				&lt;a href=&quot;#&quot; onclick=&quot;return false;&quot;&gt;Add an item...&lt;/a&gt;&lt;/div&gt;
+		&lt;/div&gt;
+	&lt;/div&gt;
+&lt;/div&gt;
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+	</ol>
+</body>

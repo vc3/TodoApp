@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2008/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>demo_user</Title>
+			<Shortcut>demo_user</Shortcut>
+			<Description></Description>
+			<Author>VC3</Author>
+			<Imports>
+				<Namespace>System</Namespace>
+				<Namespace>System.Collections.Generic</Namespace>
+				<Namespace>System.Linq</Namespace>
+				<Namespace>System.ComponentModel.DataAnnotations</Namespace>
+				<Namespace>ExoModel</Namespace>
+				<Namespace>ExoRule</Namespace>
+				<Namespace>ExoRule.DataAnnotations</Namespace>
+				<Namespace>System.Security.Principal</Namespace>
+				<Namespace>System.Web.Security</Namespace>
+			</Imports>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+							<Code Language="csharp"><![CDATA[
+	public class User : IIdentity
+	{
+		public int Id { get; set; }
+
+		public virtual ICollection<List> Lists { get; set; }
+
+		[Required]
+		public string OpenId { get; set; }
+
+		[Required]
+		public string Name { get; set; }
+
+		public static User[] All
+		{
+			get
+			{
+				return TodoContext.Current.Users.ToArray();
+			}
+		}
+
+		[NotMapped]
+		public string AuthenticationType
+		{
+			get { return "TodoApp"; }
+		}
+
+		[NotMapped]
+		public bool IsAuthenticated
+		{
+			get { return true; }
+		}
+	}
+]]>
+							</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

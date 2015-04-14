@@ -1,0 +1,387 @@
+﻿<style type="text/css">
+	body
+	{
+		font-family: Corbel, Tahoma, Verdana;
+	}
+	.MsoNormal
+	{
+		margin: 1px;
+		font-size: 10pt;
+	}
+	.code
+	{
+		font-family: Consolas, Courier New, Sans-Serif;
+		font-weight: bold;
+	}
+	.code-block
+	{
+		margin:25px;
+	}
+	.highlight
+	{
+		background: yellow;
+	}
+	</style>
+<body>
+	<p style="font-size: x-large;">
+		<strong>Create Login Page</strong>
+	</p>
+	<p>
+		For this example, we will be using <a href="http://www.dotnetopenauth.net/" title="DotNetOpenAuth">DotNetOpenAuth</a> for user authentication and the <a href="http://code.google.com/p/openid-selector/" title="openid-selector">openid-selector</a> control to provide the sign-in interface.&nbsp; <a href="http://openid.net/" title="OpenId Site">OpenId</a> defines a standard for user authentication via a trusted third-party.</p>
+	<p>
+		First, we will modify the <span class="code">User</span> class to implement <span class="code">System.Security.Principal.IIdentity.</span> This will allow us to associate the authenticated user with the current Request context for later use by the application.</p>
+	<p>
+		Now that we have a representation in the model of the User, we need to create a view and corresponding controller.&nbsp; The controller will contain all of the necessary logic to handle the OpenId authentication handshake.&nbsp; Upon receiving a response from the OpenId provider selected by the user, the system will use the unique identifier from the provider to determine if the user exists in the system.&nbsp; If the user does not exist, a new record is created within the database and an Asp.Net authentication cookie is created for the session.</p>
+	<p>
+		The sign-in view consists of a small amount of markup as well as the OpenId selector control.&nbsp; This control provides a means of displaying a friendly interface for authentication as well as submission of the user&#39;s selection.&nbsp; Although not strictly necessary, this control makes it fairly easy to get started quickly:
+	</p>
+	<p>
+		<img alt="OpenId selector" class="style1" src="openid-selector.png" />
+	</p>
+	<p>Having completed the interface, it&#39;s time to install some of the plumbing.&nbsp; The first task is to modify the <strong>web.config</strong> file to indicate to the application where to send unauthenticated users.&nbsp; This is simply a matter of modifying the following lines of code:</p>
+	<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+9.5pt;font-family:Consolas;color:blue'>&lt;</span><span style='font-size:9.5pt;
+font-family:Consolas;color:#A31515'>authentication</span><span
+style='font-size:9.5pt;font-family:Consolas;color:blue'> </span><span
+style='font-size:9.5pt;font-family:Consolas;color:red'>mode</span><span
+style='font-size:9.5pt;font-family:Consolas;color:blue'>=</span><span
+style='font-size:9.5pt;font-family:Consolas'>&quot;<span style='color:blue'>Forms</span>&quot;<span
+style='color:blue'>&gt;</span><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+9.5pt;font-family:Consolas;color:blue'><span style='mso-spacerun:yes'>  
+</span>&lt;</span><span style='font-size:9.5pt;font-family:Consolas;color:#A31515'>forms</span><span
+style='font-size:9.5pt;font-family:Consolas;color:blue'> </span><span
+style='font-size:9.5pt;font-family:Consolas;color:red'>loginUrl</span><span
+style='font-size:9.5pt;font-family:Consolas;color:blue'>=</span><span
+style='font-size:9.5pt;font-family:Consolas'>&quot;<span style='color:blue'>~/User</span>&quot;<span
+style='color:blue'> </span><span style='color:red'>timeout</span><span
+style='color:blue'>=</span>&quot;<span style='color:blue'>2880</span>&quot;<span
+style='color:blue'> /&gt;</span><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+9.5pt;font-family:Consolas;color:blue'>&lt;/</span><span style='font-size:9.5pt;
+font-family:Consolas;color:#A31515'>authentication</span><span
+style='font-size:9.5pt;font-family:Consolas;color:blue'>&gt;<o:p></o:p></span></p>
+	<p>This indicates to Asp.Net that unauthenticated users - upon reaching a page that requires authentication - should be redirected to ~/Users.</p>
+	<p>The <strong>Global.asax.cs</strong> file must then be modified so that upon each request, if a valid authentication cookie is found, the system should attempt to load the associated User instance and bind it to the current request context.</p>
+	<hr />
+	<ol>
+		<!-- Implement IIdentity -->
+		<li>Modify the <strong>User</strong> class to implement <strong>System.Security.Principal.IIdentity</strong>.</li>
+
+		<!-- User Class Snippet -->
+		<li>Insert the following code snippet into <strong>User</strong> class:
+			<div class="snippet">
+				<pre>
+		[Required]
+		public string OpenId { get; set; }
+
+		[NotMapped]
+		public string AuthenticationType
+		{
+			get { return "TodoApp"; }
+		}
+
+		[NotMapped]
+		public bool IsAuthenticated
+		{
+			get { return true; }
+		}
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<!-- User Controller -->
+		<li>Add a controller called <strong>UserController.cs</strong> to the <strong>Controllers</strong> folder.</li>
+		<li>Replace the contents of <strong>UserController.cs</strong> with the following code snippet:
+			<div class="snippet">
+				<pre>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using DotNetOpenAuth.OpenId.RelyingParty;
+using System.Web.Security;
+using DotNetOpenAuth.OpenId;
+using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
+using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
+using TodoApp.Models;
+using DotNetOpenAuth.Messaging;
+using System.ComponentModel.DataAnnotations;
+using ExoModel;
+
+namespace TodoApp.Controllers
+{
+	public class UserController : Controller
+	{
+		private static OpenIdRelyingParty openid = new OpenIdRelyingParty();
+
+		public ActionResult Index()
+		{
+			if (HttpContext.User.Identity.IsAuthenticated)
+				return RedirectToAction("Index", "Home");
+
+			return View();
+		}
+
+		[HttpGet]
+		public ActionResult LogOff()
+		{
+			Session.Abandon();
+			FormsAuthentication.SignOut();
+
+			return RedirectToAction("Index", "User");
+		}
+
+		[ValidateInput(false)]
+		public ActionResult Authenticate()
+		{
+			string provider = Request.Form["openid_identifier"];
+
+			var response = openid.GetResponse();
+			if (response == null)
+			{
+				Identifier id = null;
+				if (Identifier.TryParse(provider, out id))
+				{
+					// Redirect user to provider for authentication
+					try
+					{
+						var request = openid.CreateRequest(id);
+						var fields = new ClaimsRequest()
+						{
+							Email = DemandLevel.Require,
+							FullName = DemandLevel.Require,
+							Nickname = DemandLevel.Require
+						};
+						request.AddExtension(fields);
+
+						var fetch = new FetchRequest();
+						fetch.Attributes.AddRequired(WellKnownAttributes.Name.First);
+						fetch.Attributes.AddRequired(WellKnownAttributes.Name.Last);
+						fetch.Attributes.AddRequired(WellKnownAttributes.Name.Alias);
+						fetch.Attributes.AddRequired(WellKnownAttributes.Name.FullName);
+						request.AddExtension(fetch);
+
+						return request.RedirectingResponse.AsActionResult();
+					}
+					catch (ProtocolException e)
+					{
+						ViewData["Message"] = e.Message;
+					}
+				}
+			}
+			else
+			{
+				// Handle response from provider
+				switch (response.Status)
+				{
+					case AuthenticationStatus.Authenticated:
+						var claimedIdentifier = response.ClaimedIdentifier.ToString();
+						var user = TodoContext.Current.Users.Where(u =&gt; u.OpenId == claimedIdentifier).FirstOrDefault();
+
+						if (user == null)
+						{
+							var claim = response.GetExtension&lt;ClaimsResponse&gt;();
+							var fetch = response.GetExtension&lt;FetchResponse&gt;();
+
+							// Create the new user
+							user = ModelContext.Create&lt;User&gt;();
+							user.Name = fetch.Attributes[WellKnownAttributes.Name.First].Values[0];
+							user.OpenId = claimedIdentifier;
+
+							// Add a default list to the new user
+							var defaultList = ModelContext.Create&lt;List&gt;();
+							defaultList.Name = "My First List";
+							user.Lists.Add(defaultList);
+
+							// Add a default item to the default list 
+							var defaultItem = ModelContext.Create&lt;ListItem&gt;();
+							defaultItem.DateCreated = DateTime.Now;
+							defaultItem.DueDate = DateTime.Now;
+							defaultItem.Description = "Be Productive!";
+							defaultList.Items.Add(defaultItem);
+
+							// Save the new user
+							TodoContext.Current.SaveChanges();
+						}
+
+						FormsAuthenticationTicket authTicket = new
+							FormsAuthenticationTicket(1, //version
+							response.ClaimedIdentifier, // user name
+							DateTime.Now,             //creation
+							DateTime.Now.AddMinutes(30), //Expiration
+							false, //Persistent
+							user.OpenId); 					
+									
+						string encTicket = FormsAuthentication.Encrypt(authTicket);
+
+						this.Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
+
+						return RedirectToAction("Index", "Home");
+					case AuthenticationStatus.Canceled:
+						break;
+					case AuthenticationStatus.Failed:
+						break;
+				}
+			}
+
+			return RedirectToAction("Index", "Home");
+		}
+	}
+}
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<!-- User/Index.cshtml -->
+		<li>Create a <strong>User</strong> folder under <strong>Views</strong>.</li>
+		<li>Add a view called <strong>Index.cshtml</strong> to the <strong>User</strong> folder.</li>
+		<li>Replace the contents of <strong>Index.cshtml</strong> with the following code snippet:
+			<div class="snippet">
+				<pre>
+@{
+	Layout = string.Empty;
+	ViewBag.Title = &quot;Index&quot;;
+}
+
+&lt;!DOCTYPE html&gt;
+
+&lt;html&gt;
+&lt;head&gt;
+	&lt;link type=&quot;text/css&quot; rel=&quot;stylesheet&quot; href=&quot;@Url.Content(&quot;~/scripts/openid-selector/css/openid.css&quot;)&quot; /&gt;
+	&lt;link rel=&quot;stylesheet&quot; href=&quot;@Url.Content(&quot;~/content/board.css&quot;)&quot;&gt;
+	&lt;script src=&quot;@Url.Content(&quot;~/scripts/modernizr-1.7.min.js&quot;)&quot;&gt;&lt;/script&gt;
+	&lt;script src=&quot;http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js&quot;&gt;&lt;/script&gt; 
+	&lt;script type=&quot;text/javascript&quot; src=&quot;@Url.Content(&quot;~/scripts/openid-selector/js/openid-jquery.js&quot;)&quot;&gt;&lt;/script&gt;
+	&lt;script type=&quot;text/javascript&quot; src=&quot;@Url.Content(&quot;~/scripts/openid-selector/js/openid-en.js&quot;)&quot;&gt;&lt;/script&gt;
+	&lt;script type=&quot;text/javascript&quot;&gt;
+		$(document).ready(function () {
+			openid.img_path = &quot;scripts/openid-selector/images/&quot;;
+			openid.init(&#39;openid_identifier&#39;);
+		});
+	&lt;/script&gt;
+
+	&lt;style type=&quot;text/css&quot;&gt;
+		body
+		{
+			font: 13px/1.231 sans-serif;
+		}
+		
+		header 
+		{
+			background: #257;
+			padding: 10px;
+			border-radius: 5px;
+		}
+		
+		header h2
+		{
+			color: #fff;
+		}
+	&lt;/style&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+&lt;header&gt;
+	&lt;h2&gt;To Do Application!&lt;/h2&gt;
+&lt;/header&gt;
+
+&lt;p&gt;
+@using (Html.BeginForm(&quot;Authenticate&quot;, &quot;User&quot;, FormMethod.Post, new { id = &quot;openid_form&quot; }))
+{
+	&lt;input type=&quot;hidden&quot; name=&quot;action&quot; value=&quot;verify&quot; /&gt;
+	&lt;fieldset&gt;
+		&lt;legend&gt;Sign-in or Create New Account&lt;/legend&gt;
+		&lt;div id=&quot;openid_choice&quot;&gt;
+			&lt;p&gt;Please click your account provider:&lt;/p&gt;
+			&lt;div id=&quot;openid_btns&quot;&gt;&lt;/div&gt;
+		&lt;/div&gt;
+		&lt;div id=&quot;openid_input_area&quot;&gt;
+			&lt;input id=&quot;openid_identifier&quot; name=&quot;openid_identifier&quot; type=&quot;text&quot; value=&quot;http://&quot; /&gt;
+			&lt;input id=&quot;openid_submit&quot; type=&quot;submit&quot; value=&quot;Sign-In&quot;/&gt;
+		&lt;/div&gt;
+		&lt;noscript&gt;
+			&lt;p&gt;OpenID is service that allows you to log-on to many different websites using a single indentity.
+			Find out &lt;a href=&quot;http://openid.net/what/&quot;&gt;more about OpenID&lt;/a&gt; and &lt;a href=&quot;http://openid.net/get/&quot;&gt;how to get an OpenID enabled account&lt;/a&gt;.&lt;/p&gt;
+		&lt;/noscript&gt;
+	&lt;/fieldset&gt;
+}
+&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<!-- Open ID Scripts -->
+		<li>Copy the following Open ID scripts and dependencies into <strong>scripts</strong> folder: <a href="openid-selector.zip">openid-selector.zip</a></li>
+
+		<li>Modify the root <strong>Web.config</strong> to set the <strong>loginUrl</strong> to <strong>~/User</strong>:
+		
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+9.5pt;font-family:Consolas;color:blue'>&lt;</span><span style='font-size:9.5pt;
+font-family:Consolas;color:#A31515'>authentication</span><span
+style='font-size:9.5pt;font-family:Consolas;color:blue'> </span><span
+style='font-size:9.5pt;font-family:Consolas;color:red'>mode</span><span
+style='font-size:9.5pt;font-family:Consolas;color:blue'>=</span><span
+style='font-size:9.5pt;font-family:Consolas'>&quot;<span style='color:blue'>Forms</span>&quot;<span
+style='color:blue'>&gt;</span><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+9.5pt;font-family:Consolas;color:blue'><span style='mso-spacerun:yes'>  
+</span>&lt;</span><span style='font-size:9.5pt;font-family:Consolas;color:#A31515'>forms</span><span
+style='font-size:9.5pt;font-family:Consolas;color:blue'> </span><span
+style='font-size:9.5pt;font-family:Consolas;color:red'>loginUrl</span><span
+style='font-size:9.5pt;font-family:Consolas;color:blue'>=</span><span
+style='font-size:9.5pt;font-family:Consolas'>&quot;<span style='color:blue'>~/User</span>&quot;<span
+style='color:blue'> </span><span style='color:red'>timeout</span><span
+style='color:blue'>=</span>&quot;<span style='color:blue'>2880</span>&quot;<span
+style='color:blue'> /&gt;</span><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+9.5pt;font-family:Consolas;color:blue'>&lt;/</span><span style='font-size:9.5pt;
+font-family:Consolas;color:#A31515'>authentication</span><span
+style='font-size:9.5pt;font-family:Consolas;color:blue'>&gt;<o:p></o:p></span></p><br />
+		</li>
+
+		<li>Add the following method snippet to the <strong>MvcApplication</strong> class in the <strong>Global.asax.cs</strong>
+			<div class="snippet">
+<pre>
+		void Application_PostAuthenticateRequest(object sender, EventArgs e)
+		{
+			HttpCookie authCookie = HttpContext.Current.Request.Cookies[FormsAuthentication.FormsCookieName];
+			if (authCookie != null)
+			{
+				string encTicket = authCookie.Value;
+				if (!String.IsNullOrEmpty(encTicket))
+				{
+					FormsAuthenticationTicket ticket = FormsAuthentication.Decrypt(encTicket);
+
+					var user = TodoContext.Current.Users.Where(p => p.OpenId == ticket.UserData).First();
+
+					GenericPrincipal prin = new GenericPrincipal(user, null);
+
+					HttpContext.Current.User = prin;
+				}
+			}
+		}
+</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+	</ol>
+</body>

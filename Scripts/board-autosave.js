@@ -1,4 +1,4 @@
-$exoweb({
+﻿$exoweb({
 	contextReady: function (context) {
 		// Automatically save changes immediately
 		context.server.startAutoSave(context.model.user, 1);

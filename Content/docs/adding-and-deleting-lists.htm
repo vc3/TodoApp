@@ -1,0 +1,205 @@
+﻿<style type="text/css">
+	body 
+	{
+		font-family: Corbel, Tahoma, Verdana;
+	}
+	.MsoNormal
+	{
+		margin: 1px;
+	}
+	.code
+	{
+		font-family: Consolas, Courier New, Sans-Serif;
+	}
+	.style1
+	{
+		width: 349px;
+	}
+	.style2
+	{
+		width: 324px;
+	}
+	.style3
+	{
+		width: 212px;
+	}
+</style>
+<body>
+	<p style="font-size: x-large;">
+		<strong>Adding &amp; Deleting Lists</strong>
+	</p>
+	<p>
+		Adding and deleting lists should be very easy since it&#39;s really just a variation 
+		of functionality that we&#39;ve already implemented.</p>
+	<p>
+		There is add list link at the top of the board, next to the user&#39;s name.</p>
+	<p>
+		<img alt="" class="style1" src="add-list-link.png" /></p>
+	<p>
+		When the link is clicked a dialog opens with a single text field for the name of 
+		the list, and ok button, and a cancel button.&nbsp; The user can also confirm 
+		the new list by pressing the ENTER key.</p>
+	<p style="padding-left:25px;">
+		<img alt="" class="style2" src="add-list-dialog.png" /></p>
+	<p>
+		The delete button for lists, just as with cards, is located in the top-right 
+		corner of the list.</p>
+	<p style="padding-left: 30px;">
+		<img alt="" class="style3" src="list-delete.png" /></p>
+	<p>
+		You may want to give it a shot yourself and see what you can come up with, then 
+		compare it to the code snippets below.</p>
+	<hr />
+	<ol>
+		<li>Create the javascript file <strong>board-addlist.js</strong> under <strong>scripts</strong></li>
+
+		<li>Insert the following snippet into <strong>scripts/board-addlist.js</strong>:
+			<div class="snippet">
+				<pre>
+// Raise cancel event on escape keypress
+$(document.documentElement).on("keydown", ".board-addlist-dialog .dialog-content", function(e) {
+	if (e.keyCode === jQuery.ui.keyCode.ESCAPE) {
+		Sys.UI.DomElement.raiseBubbleEvent(this, new Sys.CommandEventArgs("cancel", null, this));
+	}
+});
+
+// Raise ok event on enter keypress
+$(document.documentElement).on("keypress", ".board-addlist-dialog .dialog-content", function(e) {
+	if (e.keyCode === jQuery.ui.keyCode.ENTER) {
+		Sys.UI.DomElement.raiseBubbleEvent(this, new Sys.CommandEventArgs("ok", null, this));
+	}
+});
+
+$(document.documentElement).on("click", ".board-addlist", function() {
+	var $dialog = $(".board-addlist-dialog");
+
+	// Clear out an existing value
+	$dialog.find("input[type=text]").val("");
+
+	$dialog.dialog({
+		autoOpen: false,
+		modal: true,
+		title: "Add New List",
+		width: $dialog.attr("width") ? parseInt($dialog.attr("width")) : undefined,
+		height: $dialog.attr("height") ? parseInt($dialog.attr("height")) : undefined,
+		closeOnEscape: false,
+		open: function(event, ui) {
+			// Disable close button
+			$(this).closest(".ui-dialog").find(".ui-dialog-titlebar-close").hide();
+		}
+	});
+
+	// Set up commands to respond to button clicks
+	$dialog.dialogCommands({
+		ok: function() {
+			var text = $dialog.find("input[type=text]").val();
+
+			// Exit if a name was not entered
+			if (!text) {
+				return false;
+			}
+
+			// Create the new list
+			var list = new List({
+				Sequence: context.model.user.get_Lists().length,
+				User: context.model.user,
+				Name: text
+			});
+
+			// Add to the list of lists
+			context.model.user.get_Lists().add(list);
+
+			// Notify that a list has been added
+			$(window).trigger("board:listadded");
+		},
+		cancel: function() {
+			// do nothing
+		}
+	});
+
+	// Apply data to the dataview
+	$dialog.control("data", context.model.user);
+
+	// Open the dialog
+	$dialog.dialog("open");
+});
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<li>Append the following code snippet in <strong>Views\Home\Index.cshtml</strong> under the list of script references:
+			<div class="snippet">
+				<pre>
+&lt;script src="@Url.Content("~/scripts/board-addlist.js")"&gt;&lt;/script&gt;
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+		<li>Create the javascript file <strong>board-deletelist.js</strong> under <strong>scripts</strong></li>
+
+		<li>Insert the following snippet into <strong>scripts/board-deletelist.js</strong>:
+			<div class="snippet">
+				<pre>
+// delete list
+$(document.documentElement).on("click", ".board-deletelist", function (e) {
+	var list = $parentContextData(this, null, null, List);
+	list.get_User().get_Lists().remove(list);
+	e.stopPropagation();
+});
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<li>Append the following code snippet in <strong>Views\Home\Index.cshtml</strong> under the list of script references:
+			<div class="snippet">
+				<pre>
+&lt;script src="@Url.Content("~/scripts/board-deletelist.js")"&gt;&lt;/script&gt;
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<li>Append the following code snippet at the end of <strong>Views\Home\Index.cshtml</strong> after the main board markup and the item edit dialog:
+			<div class="snippet">
+				<pre>
+@*
+Dialog for adding a list
+*@
+
+&lt;div class=&quot;sys-template board-addlist-dialog&quot; sys:attach=&quot;dataview&quot;&gt;
+	&lt;div class=&quot;dialog-content&quot;&gt;
+		&lt;div class=&quot;label&quot;&gt;Name&lt;/div&gt;
+		&lt;div class=&quot;editor&quot;&gt;&lt;input type=&quot;text&quot; /&gt;&lt;/div&gt;
+	&lt;/div&gt;
+	&lt;div class=&quot;dialog-footer&quot;&gt;
+		&lt;input type=&quot;button&quot; sys:command=&quot;ok&quot; onclick=&quot;return false;&quot; value=&quot;Ok&quot; /&gt;
+		&lt;input type=&quot;button&quot; sys:command=&quot;cancel&quot; onclick=&quot;return false;&quot; value=&quot;Cancel&quot; /&gt;
+	&lt;/div&gt;
+&lt;/div&gt;
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<li>Add the following snippet adjacent to the existing $extend block in <strong>Views\Home\Index.cshtml</strong>:
+			<div class="snippet">
+				<pre>
+$extend("User", function() {
+	new ExoWeb.Model.Rule(User.meta, {
+		onChangeOf: "Lists",
+		execute: function(user) {
+			$transform(user.get_Lists()).orderBy('Sequence').forEach(function(item, index) {
+				item.set_Sequence(index);
+			});
+		}
+	});
+});
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+	</ol>
+</body>

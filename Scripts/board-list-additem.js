@@ -10,6 +10,10 @@
 		// Use the current date and time as the date created
 		var now = new Date();
 
+		// Set the current time before creating the item to
+		// ensure that it's label is accurate
+		context.model.user.set_CurrentTime(now);
+
 		// Create the new list item
 		var newItem = new ListItem({
 			List: parentList,

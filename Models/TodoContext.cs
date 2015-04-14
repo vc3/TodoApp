@@ -1,9 +1,11 @@
-﻿using System.Data.Entity;
+﻿using System.Linq;
+using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using ExoModel.EntityFramework;
 using ExoModel;
 using ExoRule;
 using ExoRule.DataAnnotations;
+using System.Collections.Generic;
 
 namespace TodoApp.Models
 {

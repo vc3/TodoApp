@@ -1,0 +1,350 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<style type="text/css">
+		.MsoNormal
+		{
+			margin: 1px;
+		}
+		.code-inline
+		{
+			border:1px solid #d0d0d0;
+			padding:1px 2px;
+			background:#e0e0e0;
+		}
+		.code-block
+		{
+			margin:25px;
+		}
+		.style1
+		{
+			width: 479px;
+			height: 254px;
+		}
+	</style>
+</head>
+<body style="font-family: Corbel">
+
+	<p style="font-size: x-large;">
+		<strong>Sorting Items</strong>
+	</p>
+	<p>
+		A task list isn&#39;t very useful if you can&#39;t move things around.&nbsp; Fortunately 
+		jQuery UI includes a nifty sorting behavior that&#39;s really easy to use.</p>
+	<p>
+		You may have noticed that we applied a &quot;sortable&quot; class to our list markup.&nbsp; 
+		We&#39;re going to use that as a marker that identifies what can be sorted.</p>
+	<div class="code-block">
+		<pre><span style="font-family:
+Consolas;color:black">$(</span><span style="font-family:Consolas;color:maroon">&quot;.sortable&quot;</span><span 
+			style="font-family:Consolas;color:black">).sortable({<o:p></o:p></span></pre>
+		<pre><span style="font-family:Consolas;color:black"><span 
+			style="mso-tab-count:1">         </span>placeholder:&nbsp;</span><span 
+			style="font-family:Consolas;color:maroon">&quot;ui-state-highlight&quot;</span><span 
+			style="font-family:Consolas;color:black">,<o:p></o:p></span></pre>
+		<pre><span style="font-family:Consolas;color:black">});<o:p></o:p></span></pre>
+	</div>
+	<p>
+		The children of a &quot;.sortable&quot; element can now be grabbed and moved to a 
+		different spot within the &quot;.sortable&quot; element.</p>
+	<p>
+		<img alt="" class="style1" src="item-sort.png" /></p>
+	<p>
+		This is all well and good, but when you reload the page you&#39;ll notice that the 
+		cards are right back where they started.&nbsp; The jQuery UI sortable behavior 
+		controls the DOM manipulation aspect of sorting, but it&#39;s up to us to update the 
+		model accordingly.&nbsp; Specifically, we must update the <span class="code-inline">Sequence</span> property of 
+		the item being moved to reflect its new position in the list.</p>
+	<p>
+		In order to do this we need to know the <span class="code-inline">ListItem</span> that the card being moved 
+		represents.&nbsp; You could easily do this by adding the item&#39;s id to the 
+		template markup and using that to retrieve the item by id.&nbsp; For example:</p>
+	<div class="code-block">
+		<span style="font-size:11.0pt;line-height:115%;
+font-family:Consolas;mso-fareast-font-family:Calibri;mso-fareast-theme-font:
+minor-latin;color:blue;mso-ansi-language:EN-US;mso-fareast-language:EN-US;
+mso-bidi-language:AR-SA">&lt;</span><span style="font-size:11.0pt;line-height:
+115%;font-family:Consolas;mso-fareast-font-family:Calibri;mso-fareast-theme-font:
+minor-latin;color:maroon;mso-ansi-language:EN-US;mso-fareast-language:EN-US;
+mso-bidi-language:AR-SA">div</span><span style="font-size:11.0pt;line-height:
+115%;font-family:Consolas;mso-fareast-font-family:Calibri;mso-fareast-theme-font:
+minor-latin;color:black;mso-ansi-language:EN-US;mso-fareast-language:EN-US;
+mso-bidi-language:AR-SA">&nbsp;</span><span style="font-size:11.0pt;line-height:
+115%;font-family:Consolas;mso-fareast-font-family:Calibri;mso-fareast-theme-font:
+minor-latin;color:red;mso-ansi-language:EN-US;mso-fareast-language:EN-US;
+mso-bidi-language:AR-SA">class</span><span style="font-size:11.0pt;line-height:
+115%;font-family:Consolas;mso-fareast-font-family:Calibri;mso-fareast-theme-font:
+minor-latin;color:blue;mso-ansi-language:EN-US;mso-fareast-language:EN-US;
+mso-bidi-language:AR-SA">=&quot;board-list-item&quot; </span>
+		<span style="font-size:11.0pt;line-height:115%;font-family:Consolas;mso-fareast-font-family:
+Calibri;mso-fareast-theme-font:minor-latin;color:red;mso-ansi-language:EN-US;
+mso-fareast-language:EN-US;mso-bidi-language:AR-SA">sys:itemid</span><span style="font-size:11.0pt;line-height:115%;font-family:Consolas;mso-fareast-font-family:
+Calibri;mso-fareast-theme-font:minor-latin;color:blue;mso-ansi-language:EN-US;
+mso-fareast-language:EN-US;mso-bidi-language:AR-SA">=&quot;{binding meta.id}&quot;&gt;</span>
+	</div>
+	<p>
+		The approach we&#39;ve used previously is to search the DOM to determine the 
+		&quot;binding context&quot;, which we can do here as well.&nbsp; To do so we must 
+		determine the item in question when the sort starts, before it has been removed 
+		from its parent.&nbsp; Otherwise, we wouldn&#39;t be able to determine the binding 
+		context since we&#39;ve altered the DOM structure.&nbsp; Since we&#39;re using jQuery 
+		for the UI behavior, we can also use jQuery to store the item when the sort 
+		starts, and retrieve it later when the sort completes.</p>
+	<div class="code-block">
+	<pre style="font-family: Consolas; font-size: 13; color: black; background: white;">$(<span 
+		style="color:maroon;">&quot;.sortable&quot;</span>).sortable({
+	placeholder:&nbsp;<span style="color:maroon;">&quot;ui-state-highlight&quot;</span>,
+	start:&nbsp;<span style="color:blue;">function</span>(event,&nbsp;ui)&nbsp;{
+		<span style="color:darkgreen;">//&nbsp;Retrieve&nbsp;the&nbsp;card&nbsp;being&nbsp;moved</span>
+		<span style="color:blue;">var</span>&nbsp;cardEl&nbsp;=&nbsp;ui.item[0];
+		<span style="color:blue;">var</span>&nbsp;$cardEl&nbsp;=&nbsp;$(cardEl);
+ 
+		<span style="color:darkgreen;">//&nbsp;Find&nbsp;the&nbsp;item</span>
+		<span style="color:blue;">var</span>&nbsp;item&nbsp;=&nbsp;$parentContextData(cardEl,&nbsp;<span 
+		style="color:blue;">null</span>,&nbsp;<span style="color:blue;">null</span>,&nbsp;ListItem);
+ 
+		<span style="color:darkgreen;">//&nbsp;Cache&nbsp;off&nbsp;this&nbsp;information&nbsp;for&nbsp;later&nbsp;use</span>
+		$cardEl.data(<span style="color:maroon;">&quot;item&quot;</span>,&nbsp;item);
+	}
+});</pre>
+	</div>
+	<p>
+		Here we&#39;re using jQuery&#39;s data functionality to store the item so that we can 
+		retrieve it later.&nbsp; Then, when the sort stops, we can set the <span class="code-inline">Sequence</span> 
+		property according to the item's new index in the list.</p>
+	<div class="code-block">
+	<pre><span style="font-family:
+Consolas;color:black">$(</span><span style="font-family:Consolas;color:maroon">&quot;.sortable&quot;</span><span 
+		style="font-family:Consolas;color:black">).sortable({<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>placeholder:&nbsp;</span><span 
+		style="font-family:Consolas;color:maroon">&quot;ui-state-highlight&quot;</span><span 
+		style="font-family:Consolas;color:black">,<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>start:&nbsp;</span><span 
+		style="font-family:Consolas;color:blue">function</span><span style="font-family:
+Consolas;color:black">(event,&nbsp;ui)&nbsp;{<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span></span><span style="font-family:
+Consolas;color:darkgreen">//&nbsp;Retrieve&nbsp;the&nbsp;card&nbsp;being&nbsp;moved</span><span 
+		style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span></span><span style="font-family:
+Consolas;color:blue">var</span><span style="font-family:Consolas;color:black">&nbsp;cardEl&nbsp;=&nbsp;ui.item[0];<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span></span><span style="font-family:
+Consolas;color:blue">var</span><span style="font-family:Consolas;color:black">&nbsp;$cardEl&nbsp;=&nbsp;$(cardEl);<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"> <o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span></span><span style="font-family:
+Consolas;color:darkgreen">//&nbsp;Find&nbsp;the&nbsp;item</span><span 
+		style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span></span><span style="font-family:
+Consolas;color:blue">var</span><span style="font-family:Consolas;color:black">&nbsp;item&nbsp;=&nbsp;$parentContextData(cardEl,&nbsp;</span><span 
+		style="font-family:Consolas;color:blue">null</span><span style="font-family:
+Consolas;color:black">,&nbsp;</span><span style="font-family:Consolas;
+color:blue">null</span><span style="font-family:Consolas;color:black">,&nbsp;ListItem);<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"> <o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span></span><span style="font-family:
+Consolas;color:darkgreen">//&nbsp;Cache&nbsp;off&nbsp;this&nbsp;information&nbsp;for&nbsp;later&nbsp;use</span><span 
+		style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span>$cardEl.data(</span><span 
+		style="font-family:Consolas;color:maroon">&quot;item&quot;</span><span 
+		style="font-family:Consolas;color:black">,&nbsp;item);<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>},<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>beforeStop:&nbsp;</span><span 
+		style="font-family:Consolas;color:blue">function</span><span style="font-family:
+Consolas;color:black">(event,&nbsp;ui)&nbsp;{<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span></span><span style="font-family:
+Consolas;color:blue">var</span><span style="font-family:Consolas;color:black">&nbsp;$cardEl&nbsp;=&nbsp;$(event.originalEvent.target).closest(</span><span 
+		style="font-family:Consolas;color:maroon">&quot;.board-list-item&quot;</span><span 
+		style="font-family:Consolas;color:black">).parent();<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span></span><span style="font-family:
+Consolas;color:blue">var</span><span style="font-family:Consolas;color:black">&nbsp;cardEl&nbsp;=&nbsp;$cardEl.get(0);<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"> <o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span></span><span style="font-family:
+Consolas;color:darkgreen">//&nbsp;Determine&nbsp;item,&nbsp;from&nbsp;and&nbsp;to&nbsp;list</span><span 
+		style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span></span><span style="font-family:
+Consolas;color:blue">var</span><span style="font-family:Consolas;color:black">&nbsp;item&nbsp;=&nbsp;$cardEl.data(</span><span 
+		style="font-family:Consolas;color:maroon">&quot;item&quot;</span><span 
+		style="font-family:Consolas;color:black">);<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span></span><span style="font-family:
+Consolas;color:blue">var</span><span style="font-family:Consolas;color:black">&nbsp;toIndex&nbsp;=&nbsp;$cardEl.index();<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"> <o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span></span><span style="font-family:
+Consolas;color:blue">if</span><span style="font-family:Consolas;color:black">&nbsp;(item.get_Sequence()&nbsp;!=&nbsp;toIndex)&nbsp;{<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:3">                          </span></span><span 
+		style="font-family:Consolas;color:darkgreen">//&nbsp;Move&nbsp;the&nbsp;item&nbsp;to&nbsp;its&nbsp;new&nbsp;place&nbsp;in&nbsp;the&nbsp;list</span><span 
+		style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:3">                          </span>item.set_Sequence(toIndex);<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span>}<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"> <o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span></span><span style="font-family:
+Consolas;color:darkgreen">//&nbsp;Clear&nbsp;out&nbsp;cached&nbsp;data</span><span 
+		style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span>$cardEl.data(</span><span 
+		style="font-family:Consolas;color:maroon">&quot;item&quot;</span><span 
+		style="font-family:Consolas;color:black">,&nbsp;</span><span style="font-family:
+Consolas;color:blue">null</span><span style="font-family:Consolas;color:black">);<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>}<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">});<o:p></o:p></span></pre>
+	</div>
+	<p>
+		At this point the card that was moved has the correct sequence, but the other 
+		cards&#39; sequences haven&#39;t changed.&nbsp; Let&#39;s add some procedural code to update 
+		the sequences of the other items.</p>
+	<div class="code-block">
+	<pre>&nbsp;</pre>
+		<pre><span style="font-family:
+Consolas;color:darkgreen">//&nbsp;Moved&nbsp;up&nbsp;in&nbsp;the&nbsp;list</span><span 
+			style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+		<pre><span style="font-family:Consolas;color:blue">if</span><span 
+			style="font-family:Consolas;color:black">&nbsp;(fromIndex&nbsp;&gt;&nbsp;toIndex)&nbsp;{<o:p></o:p></span></pre>
+		<pre><span style="font-family:Consolas;color:black"><span 
+			style="mso-tab-count:1">         </span></span><span style="font-family:Consolas;
+color:darkgreen">//&nbsp;Increment&nbsp;every&nbsp;item&nbsp;between&nbsp;the&nbsp;start&nbsp;and&nbsp;end</span><span 
+			style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+		<pre><span style="font-family:Consolas;color:black"><span 
+			style="mso-tab-count:1">         </span>item.get_List().get_Items().forEach(</span><span 
+			style="font-family:Consolas;color:blue">function</span><span style="font-family:
+Consolas;color:black">(otherItem)&nbsp;{<o:p></o:p></span></pre>
+		<pre><span style="font-family:Consolas;color:black"><span 
+			style="mso-tab-count:1">                  </span></span><span 
+			style="font-family:Consolas;color:blue">if</span><span style="font-family:Consolas;
+color:black">&nbsp;(otherItem&nbsp;!==&nbsp;item&nbsp;&amp;&amp;&nbsp;otherItem.get_Sequence()&nbsp;&gt;=&nbsp;toIndex&nbsp;&amp;&amp;&nbsp;otherItem.get_Sequence()&nbsp;&lt;&nbsp;fromIndex)&nbsp;{<o:p></o:p></span></pre>
+		<pre><span style="font-family:Consolas;color:black"><span 
+			style="mso-tab-count:3">                          </span>otherItem.set_Sequence(otherItem.get_Sequence()&nbsp;+&nbsp;1);<o:p></o:p></span></pre>
+		<pre><span style="font-family:Consolas;color:black"><span 
+			style="mso-tab-count:2">                 </span>}<o:p></o:p></span></pre>
+		<pre><span style="font-family:Consolas;color:black"><span 
+			style="mso-tab-count:1">         </span>});<o:p></o:p></span></pre>
+		<pre><span style="font-family:Consolas;color:black">}<o:p></o:p></span></pre>
+		<pre><span style="font-family:Consolas;color:darkgreen">//&nbsp;Moved&nbsp;down&nbsp;in&nbsp;the&nbsp;list</span><span 
+			style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+		<pre><span style="font-family:Consolas;color:blue">else</span><span 
+			style="font-family:Consolas;color:black">&nbsp;</span><span style="font-family:
+Consolas;color:blue">if</span><span style="font-family:Consolas;color:black">&nbsp;(toIndex&nbsp;&gt;&nbsp;fromIndex)&nbsp;{<o:p></o:p></span></pre>
+		<pre><span style="font-family:Consolas;color:black"><span 
+			style="mso-tab-count:1">         </span></span><span style="font-family:Consolas;
+color:darkgreen">//&nbsp;Decrement&nbsp;every&nbsp;item&nbsp;between&nbsp;the&nbsp;start&nbsp;and&nbsp;end</span><span 
+			style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+		<pre><span style="font-family:Consolas;color:black"><span 
+			style="mso-tab-count:1">         </span>item.get_List().get_Items().forEach(</span><span 
+			style="font-family:Consolas;color:blue">function</span><span style="font-family:
+Consolas;color:black">(otherItem)&nbsp;{<o:p></o:p></span></pre>
+		<pre><span style="font-family:Consolas;color:black"><span 
+			style="mso-tab-count:1">                  </span></span><span 
+			style="font-family:Consolas;color:blue">if</span><span style="font-family:Consolas;
+color:black">&nbsp;(otherItem&nbsp;!==&nbsp;item&nbsp;&amp;&amp;&nbsp;otherItem.get_Sequence()&nbsp;&gt;&nbsp;fromIndex&nbsp;&amp;&amp;&nbsp;otherItem.get_Sequence()&nbsp;&lt;=&nbsp;toIndex)&nbsp;{<o:p></o:p></span></pre>
+		<pre><span style="font-family:Consolas;color:black"><span 
+			style="mso-tab-count:3">                          </span>otherItem.set_Sequence(otherItem.get_Sequence()&nbsp;-&nbsp;1);<o:p></o:p></span></pre>
+		<pre><span style="font-family:Consolas;color:black"><span 
+			style="mso-tab-count:2">                 </span>}<o:p></o:p></span></pre>
+		<pre><span style="font-family:Consolas;color:black"><span 
+			style="mso-tab-count:1">         </span>});<o:p></o:p></span></pre>
+		<pre><span style="font-family:Consolas;color:black">}<o:p></o:p></span></pre>
+	</div>
+	<hr />
+	<ol>
+		<li>Create the javascript file <strong>board-sorting.js</strong> under <strong>scripts</strong></li>
+
+		<li>Insert the following snippet into <strong>scripts/board-sorting.js</strong>:
+			<div class="snippet">
+				<pre>
+$(function() {
+
+	function registerSorting() {
+		$(&quot;.sortable&quot;).sortable({
+			placeholder: &quot;ui-state-highlight&quot;,
+			start: function(event, ui) {
+				// Retrieve the card being moved
+				var cardEl = ui.item[0];
+				var $cardEl = $(cardEl);
+
+				// Find the item
+				var item = $parentContextData(cardEl, null, null, ListItem);
+
+				// Cache off this information for later use
+				$cardEl.data(&quot;item&quot;, item);
+			},
+			beforeStop: function(event, ui) {
+				var $cardEl = $(event.originalEvent.target).closest(&quot;.board-list-item&quot;).parent();
+				var cardEl = $cardEl.get(0);
+
+				// Determine item, from and to list
+				var item = $cardEl.data(&quot;item&quot;);
+				var fromIndex = item.get_Sequence();
+				var toIndex = $cardEl.index();
+
+				if (fromIndex != toIndex) {
+					// Move the item to its new place in the list
+					item.set_Sequence(toIndex);
+
+					// Moved up in the list
+					if (fromIndex &gt; toIndex) {
+						// Increment every item between the start and end
+						item.get_List().get_Items().forEach(function(otherItem) {
+							if (otherItem !== item &amp;&amp; otherItem.get_Sequence() &gt;= toIndex &amp;&amp; otherItem.get_Sequence() &lt; fromIndex) {
+								otherItem.set_Sequence(otherItem.get_Sequence() + 1);
+							}
+						});
+					}
+					// Moved down in the list
+					else if (toIndex &gt; fromIndex) {
+						// Decrement every item between the start and end
+						item.get_List().get_Items().forEach(function(otherItem) {
+							if (otherItem !== item &amp;&amp; otherItem.get_Sequence() &gt; fromIndex &amp;&amp; otherItem.get_Sequence() &lt;= toIndex) {
+								otherItem.set_Sequence(otherItem.get_Sequence() - 1);
+							}
+						});
+					}
+				}
+
+				// Clear out cached data
+				$cardEl.data(&quot;item&quot;, null);
+			}
+		});
+	}
+
+	registerSorting();
+
+	$(window).bind("board:listadded", registerSorting);
+
+});
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<!-- Snippet 1 -->
+		<li>Append the following code snippet in <strong>Views\Home\Index.cshtml</strong> under the list of script references:
+			<div class="snippet">
+				<pre>
+&lt;script src="@Url.Content("~/scripts/board-sorting.js")"&gt;&lt;/script&gt;
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+	</ol>
+
+</body>
+</html>

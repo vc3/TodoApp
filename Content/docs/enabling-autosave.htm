@@ -1,0 +1,312 @@
+﻿<style type="text/css">
+	body 
+	{
+		font-family: Corbel, Tahoma, Verdana;
+	}
+	.MsoNormal
+	{
+		margin: 1px;
+	}
+	.code
+	{
+		font-family: Consolas, Courier New, Sans-Serif;
+	}
+	.code-inline
+	{
+		border:1px solid #d0d0d0;
+		padding:1px 2px;
+		background:#e0e0e0;
+	}
+	.code-block
+	{
+		margin:25px;
+	}
+	.style1
+	{
+		width: 479px;
+	}
+	.style2
+	{
+		width: 479px;
+	}
+</style>
+<body>
+	<p style="font-size: x-large;">
+		<strong>Enabling Auto Save</strong>
+	</p>
+	<p>
+		At this point we have a dynamic template binding to our model and updating in real-time.&nbsp; We also have the ability to add new items to the board.&nbsp; 
+		However, you may have noticed that our changes don&#39;t &quot;stick&quot;; when you reload the page 
+		they are lost.&nbsp; It turns out that saving changes, also in real-time, is 
+		very simple.&nbsp; There are two main options for saving changes the user has made.</p>
+		<h4>1) Save when a button or link is clicked.</h4>
+	<div class="code-block">
+	<pre style="font-family: Consolas; font-size: 13; color: black; background: white;"><span 
+		style="color:blue;">&lt;</span><span style="color:maroon;">a</span>&nbsp;<span 
+		style="color:red;">href</span><span style="color:blue;">=&quot;#&quot; <span 
+		style="color:red;">onclick</span>=&quot;context.server.save(context.model.user); return false;&quot;&gt;</span>Save<span 
+		style="color:blue;">&lt;/</span><span 
+		style="color:maroon;">a</span><span style="color:blue;">&gt;</span></pre>
+	</div>
+	<h4>
+		2) Automatically save periodically.</h4>
+	<div class="code-block">
+	<pre style="font-family: Consolas; font-size: 13; color: black; background: white;">context.server.startAutoSave(context.model.user,&nbsp;1);</pre>
+	</div>
+	<p>
+		We&#39;re going to go with the second option.&nbsp; For an app that aims to provide 
+		a smooth desktop-like experience, this is the logical choice.&nbsp; The user 
+		won&#39;t have to think about saving, since the save occurs almost instantaneously.</p>
+	<p style="margin-top: 19px">
+		Both code snippets above reference a &quot;context&quot; variable.&nbsp; You may remember 
+		from the <a class="link" href="../../walkthrough/bind-to-model">Bind to Model</a> section that the context variable was used to store the 
+		root object of our model query, the user.&nbsp; The context object is also used 
+		to control client-server interaction, via its &quot;server&quot; property.</p>
+	<p style="margin-top: 19px">
+		In both cases the first argument is the root object to save.&nbsp; This can be any 
+		object that has been loaded on the client.</p>
+	<p style="margin-top: 19px">
+		In the case of auto-save, the second argument is the amount of time to wait after a change is detected before saving changes.&nbsp; 
+		Like <span class="code-inline">window.setTimeout</span> or <span class="code-inline">window.setInterval</span>, the unit of time is milliseconds.&nbsp; 
+		Using a value of 1 has the effect of saving changes after the browser&#39;s event 
+		loop completes.</p>
+	<p style="margin-top: 19px">
+		With auto-save enabled we can now add items and see that they &quot;stick&quot; after 
+		reloading the page.&nbsp; But the process is pretty magical and we could 
+		potentially leave the page while in the middle of saving.&nbsp; We&#39;ll add a 
+		status message at the top of the board when changes are being saved, and also 
+		warn the user before leaving the page if their changes haven&#39;t yet been saved.</p>
+	<p style="margin-top: 19px">
+		In order to display status we&#39;ll subscribe to a few events, also found on 
+		<span class="code-inline">context.server</span>.</p>
+	<p style="margin-top: 19px">The full list:</p>
+		<ul>
+			<li><span class="code-inline">context.server.addRequestBegin</span> - raised when any server request begins</li>
+			<li><span class="code-inline">context.server.addRequestEnd</span> - raised when any server request ends</li>
+			<li><span class="code-inline">context.server.addRequestSuccess</span> - raised when any server request succeeds</li>
+			<li><span class="code-inline">context.server.addRequestFailed</span> - raised when any server request fails</li>
+			<li><span class="code-inline">context.server.addRaiseServerEventBegin</span> - raised when a custom server event begins</li>
+			<li><span class="code-inline">context.server.addRaiseServerEventEnd</span> - raised when a custom server event ends</li>
+			<li><span class="code-inline">context.server.addRaiseServerEventSuccess</span> - raised when a custom server event succeeds</li>
+			<li><span class="code-inline">context.server.addRaiseServerEventFailed</span> - raised when a custom server event fails</li>
+			<li><span class="code-inline">context.server.addSaveBegin</span> - raised when a save begins</li>
+			<li><span class="code-inline">context.server.addSaveEnd</span> - raised when a save ends</li>
+			<li><span class="code-inline">context.server.addSaveSuccess</span> - raised when a save succeeds</li>
+			<li><span class="code-inline">context.server.addSaveFailed</span> - raised when a save fails</li>
+			<li><span class="code-inline">context.server.addRoundtripBegin</span> - raised when a roundtrip begins</li>
+			<li><span class="code-inline">context.server.addRoundtripEnd</span> - raised when a roundtrip ends</li>
+			<li><span class="code-inline">context.server.addRoundtripSuccess</span> - raised when a roundtrip succeeds</li>
+			<li><span class="code-inline">context.server.addRoundtripFailed</span> - raised when a roundtrip fails</li>
+		</ul>
+	<p style="margin-top: 19px">
+		For simplicity we will use the generic "Request" events.
+	</p>
+	<table style="border:1px solid #e0e0e0; width:700px;" cellpadding="2">
+		<tr>
+			<th style="border-bottom: 1px solid #e0e0e0;border-right: 1px solid #e0e0e0;text-align:left;width:300px;">Event</th>
+			<th style="border-bottom: 1px solid #e0e0e0;text-align:left;">Result</th>
+		</tr>
+		<tr>
+			<td style="border-bottom: 1px solid #e0e0e0;border-right: 1px solid #e0e0e0;">requestBegin</td>
+			<td style="border-bottom: 1px solid #e0e0e0;">Show a "working..." status.</td>
+		</tr>
+		<tr>
+			<td style="border-bottom: 1px solid #e0e0e0;border-right: 1px solid #e0e0e0;">requestEnd</td>
+			<td style="border-bottom: 1px solid #e0e0e0;">Hide the "working..." status.</td>
+		</tr>
+		<tr>
+			<td style="border-bottom: 1px solid #e0e0e0;border-right: 1px solid #e0e0e0;">requestSuccess</td>
+			<td style="border-bottom: 1px solid #e0e0e0;">Briefly show a "Success!" status.</td>
+		</tr>
+		<tr>
+			<td style="border-right: 1px solid #e0e0e0;">requestFailed</td>
+			<td>Show a "Failed!" status and provide a way to try again.</td>
+		</tr>
+	</table>
+	<p style="margin-top: 19px">
+		And here&#39;s the code to accomplish that:</p>
+	<div class="code-block">
+	<pre><span style="font-family:
+Consolas;color:black">context.server.addRequestBegin(</span><span 
+		style="font-family:Consolas;color:blue">function</span><span style="font-family:
+Consolas;color:black">&nbsp;()&nbsp;{<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>$(</span><span style="font-family:Consolas;
+color:maroon">&quot;.board:not(.sys-template)&nbsp;.board-server-working&quot;</span><span 
+		style="font-family:Consolas;color:black">).show();<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">});<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">context.server.addRequestEnd(</span><span 
+		style="font-family:Consolas;color:blue">function</span><span style="font-family:
+Consolas;color:black">&nbsp;()&nbsp;{<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>$(</span><span style="font-family:Consolas;
+color:maroon">&quot;.board:not(.sys-template)&nbsp;.board-server-working&quot;</span><span 
+		style="font-family:Consolas;color:black">).hide();<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">});<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">context.server.addRequestSuccess(</span><span 
+		style="font-family:Consolas;color:blue">function</span><span style="font-family:
+Consolas;color:black">&nbsp;()&nbsp;{<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>$(</span><span style="font-family:Consolas;
+color:maroon">&quot;.board-status-save&quot;</span><span style="font-family:
+Consolas;color:black">).hide();<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span style="mso-tab-count:
+1">         </span>$(</span><span style="font-family:Consolas;color:maroon">&quot;.board:not(.sys-template)&nbsp;.board-server-failure&quot;</span><span 
+		style="font-family:Consolas;color:black">).hide();<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>$(</span><span style="font-family:Consolas;
+color:maroon">&quot;.board:not(.sys-template)&nbsp;.board-server-success&quot;</span><span 
+		style="font-family:Consolas;color:black">).show().fadeOut(2000);<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">});<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">context.server.addRequestFailed(</span><span 
+		style="font-family:Consolas;color:blue">function</span><span style="font-family:
+Consolas;color:black">&nbsp;()&nbsp;{<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>$(</span><span style="font-family:Consolas;
+color:maroon">&quot;.board-status-save&quot;</span><span style="font-family:
+Consolas;color:black">).show();<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span style="mso-tab-count:
+1">         </span>$(</span><span style="font-family:Consolas;color:maroon">&quot;.board:not(.sys-template)&nbsp;.board-server-success"</o:p><span style="font-family:Consolas;color:black">).hide();</span></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">  </span><o:p>       $(</span><span style="font-family:Consolas;
+color:maroon">&quot;.board:not(.sys-template)&nbsp;.board-server-failure&quot;</span><span 
+		style="font-family:Consolas;color:black">).show().fadeOut(2000);<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">});<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"> <o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">$(document.documentElement).on(</span><span 
+		style="font-family:Consolas;color:maroon">&quot;click&quot;</span><span 
+		style="font-family:Consolas;color:black">,&nbsp;</span><span style="font-family:
+Consolas;color:maroon">&quot;.board-status-save&quot;</span><span 
+		style="font-family:Consolas;color:black">,&nbsp;</span><span style="font-family:
+Consolas;color:blue">function</span><span style="font-family:Consolas;
+color:black">&nbsp;()&nbsp;{<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span style="mso-tab-count:
+1">         </span>$(</span><span style="font-family:Consolas;color:maroon">&quot;.board-status-save&quot;</span><span 
+		style="font-family:Consolas;color:black">).hide();<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>context.server.save(context.model.user,&nbsp;</span><span 
+		style="font-family:Consolas;color:blue">function</span><span style="font-family:
+Consolas;color:black">&nbsp;()&nbsp;{<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span>context.server.startAutoSave(context.model.user,&nbsp;1);<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>});<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">});<o:p></o:p></span></pre>
+	</div>
+	<p style="margin-top: 19px">
+		And here&#39;s a screenshot of the status in action:</p>
+	<p style="margin-top: 19px">
+		<img alt="" class="style1" src="board-status.png" /></p>
+	<p style="margin-top: 19px">
+		Next, we&#39;ll ensure that all changes have been saved before the user leaves the 
+		page.&nbsp; To do that we&#39;ll subscribe to the browser&#39;s &quot;beforeunload&quot; event.&nbsp; 
+		The event handler can return a string which is used, in some form or another, to 
+		prompt the user whether they really want to leave the page.&nbsp; To determine 
+		whether there are changes that have not been saved we will use one final method 
+		of the server object, context.server.changes().</p>
+	<div class="code-block">
+	<pre><span style="font-family:
+Consolas;color:black">$(window).bind(</span><span style="font-family:Consolas;
+color:maroon">&quot;beforeunload&quot;</span><span style="font-family:Consolas;
+color:black">,&nbsp;</span><span style="font-family:Consolas;color:blue">function</span><span 
+		style="font-family:Consolas;color:black">&nbsp;()&nbsp;{<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span></span><span style="font-family:Consolas;
+color:darkgreen">//&nbsp;Prompt&nbsp;the&nbsp;user&nbsp;if&nbsp;they&nbsp;will&nbsp;lose&nbsp;unsaved&nbsp;changes&nbsp;by&nbsp;navigating&nbsp;away&nbsp;from&nbsp;the&nbsp;page</span><span 
+		style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span></span><span style="font-family:Consolas;
+color:blue">if</span><span style="font-family:Consolas;color:black">&nbsp;(context.server.changes(</span><span 
+		style="font-family:Consolas;color:blue">false</span><span style="font-family:
+Consolas;color:black">,&nbsp;context.model.user,&nbsp;</span><span 
+		style="font-family:Consolas;color:blue">true</span><span style="font-family:
+Consolas;color:black">).length&nbsp;&gt;&nbsp;0)&nbsp;{<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span></span><span style="font-family:
+Consolas;color:blue">return</span><span style="font-family:Consolas;color:black">&nbsp;</span><span 
+		style="font-family:Consolas;color:maroon">&quot;Are&nbsp;you&nbsp;sure&nbsp;you&nbsp;want&nbsp;to&nbsp;leave&nbsp;the&nbsp;page?&nbsp;You&nbsp;will&nbsp;lose&nbsp;unsaved&nbsp;changes.&quot;</span><span 
+		style="font-family:Consolas;color:black">;<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>}<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">});<o:p></o:p></span></pre>
+	</div>
+	<p class="MsoNormal">
+	And the result in Google Chrome:
+	</p>
+	<p>
+		<o:p>&nbsp;</o:p><img alt="" class="style2" src="exit-prompt.png" /></p>
+	<hr />
+	<ol>
+		<li>Insert the following snippet into <strong>Views\Home\Index.cshtml</strong>, in the main board markup, after the <strong>board-addlist</strong> element:
+			<div class="snippet">
+				<pre>
+&lt;span class=&quot;board-status&quot;&gt;
+	&lt;span class=&quot;board-server-working&quot;&gt;Communicating with the server...&lt;/span&gt;
+	&lt;span class=&quot;board-server-success&quot;&gt;Success&lt;/span&gt;
+	&lt;span class=&quot;board-server-failure&quot;&gt;An error occurred!&lt;/span&gt;
+	&lt;a href=&quot;#&quot; onclick=&quot;return false;&quot;&gt;Try again&lt;/a&gt;
+&lt;/span&gt;
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<li>Create the javascript file <strong>board-autosave.js</strong> under <strong>scripts</strong></li>
+
+		<li>Insert the following snippet into <strong>scripts/board-autosave.js</strong>:
+			<div class="snippet">
+				<pre>
+$exoweb({
+	contextReady: function (context) {
+		// Automatically save changes immediately
+		context.server.startAutoSave(context.model.user, 1);
+
+		// Update status when communicating with server
+		context.server.addRequestBegin(function () {
+			$(".board:not(.sys-template) .board-server-working").show();
+		});
+		context.server.addRequestEnd(function () {
+			$(".board:not(.sys-template) .board-server-working").hide();
+		});
+		context.server.addRequestSuccess(function () {
+			$(".board-status-save").hide();
+			$(".board:not(.sys-template) .board-server-failure").hide();
+			$(".board:not(.sys-template) .board-server-success").show().fadeOut(2000);
+		});
+		context.server.addRequestFailed(function () {
+			$(".board-status-save").show();
+			$(".board:not(.sys-template) .board-server-success").hide();
+			$(".board:not(.sys-template) .board-server-failure").show().fadeOut(2000);
+		});
+
+		$(document.documentElement).on("click", ".board-status-save", function () {
+			$(".board-status-save").hide();
+			context.server.save(context.model.user, function () {
+				context.server.startAutoSave(context.model.user, 1);
+			});
+		});
+	}
+});
+
+$(window).bind("beforeunload", function () {
+	// Prompt the user if they will lose unsaved changes by navigating away from the page
+	if (context.server.changes(false, context.model.user, true).length > 0) {
+		return "Are you sure you want to leave the page? You will lose unsaved changes.";
+	}
+});
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<!-- Snippet 1 -->
+		<li>Append the following code snippet in <strong>Views\Home\Index.cshtml</strong> under the list of script references:
+			<div class="snippet">
+				<pre>
+&lt;script src="@Url.Content("~/scripts/board-autosave.js")"&gt;&lt;/script&gt;
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+	</ol>
+</body>

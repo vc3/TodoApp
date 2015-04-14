@@ -1,0 +1,468 @@
+﻿<style type="text/css">
+	body
+	{
+		font-family: Corbel, Tahoma, Verdana;
+	}
+	.MsoNormal
+	{
+		margin: 1px;
+		font-size: 10pt;
+	}
+	.code
+	{
+		font-family: Consolas, Courier New, Sans-Serif;
+		font-weight: bold;
+	}
+	.code-block
+	{
+		margin:25px;
+	}
+	.highlight
+	{
+		background: yellow;
+	}
+	.style1
+	{
+		width: 672px;
+	}
+</style>
+<body>
+	<p style="font-size: x-large;">
+		<strong>Bind To Model</strong>
+	</p>
+	<p>
+		At this point we have created an Entity Framework model as well as the static html,
+		css, and images that produce the desired look and feel of the task board.&nbsp;
+		Now it&#39;s time to bring the two together.&nbsp; When this step is complete our
+		application will render the same HTML dynamically for the data stored in the database.</p>
+	<p>
+		The first thing we will do is use ExoWeb to generate a projection of our entites
+		as JavaScript objects.&nbsp; The code required to do this is short and sweet.</p>
+	
+	<!-- BEGIN: ExoWeb.Model() -->
+	<div class="code-block">
+	<p class="MsoNormal">
+		<span style="font-size: 10.0pt; font-family: Consolas; color: black; background: yellow">
+		@</span><span style="font-size:10.0pt;font-family:Consolas;color:#2B91AF">ExoWeb</span><span style="font-size:10.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:black">.Model(</span><span style="font-size:10.0pt;font-family:Consolas;color:blue">new</span><span style="font-size:10.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:black">&nbsp;<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:10.0pt;font-family:Consolas;color:black">{<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:10.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:black">
+		<span style="mso-tab-count:
+1">&nbsp;&nbsp;&nbsp;&nbsp;</span>user&nbsp;=&nbsp;Model.Include(</span><span style="font-size:10.0pt;font-family:Consolas;color:#A31515">&quot;Lists.Items&quot;</span><span style="font-size:10.0pt;
+font-family:Consolas;mso-fareast-font-family:&quot;Times New Roman&quot;;color:black">,&nbsp;</span><span style="font-size:10.0pt;font-family:Consolas;color:#A31515">&quot;Priority.All&quot;</span><span style="font-size:10.0pt;
+font-family:Consolas;mso-fareast-font-family:&quot;Times New Roman&quot;;color:black">)<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:10.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:black">})<o:p></o:p></span></p>
+	</div>
+	<!-- End: ExoWeb.Model() -->
+
+	<p>
+		The 
+		<span class="code">ExoWeb.Model</span> method is used to query our entities for the data the we will use on the client. The parameter to the method is an anonymous object,
+ where the name of each property will be used as the name of a "root" for our model context, and its value will be the value of the root.  The <span class="code">Include()</span>
+  extension method is used to specify additional paths to data that we will be using on the page.
+	</p>
+	<p>
+		Now, from our browser's console we can access the "user" root and related data like so:</p>
+
+<!-- BEGIN: Console output -->
+
+	<div class="code-block">
+	<p class="MsoNormal">
+		&gt;<span style="font-size:9.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:#0080FF">
+		<span class="highlight">context.model.user</span>.toString()</span><span style="font-size:9.0pt;font-family:Consolas;mso-fareast-font-family:&quot;Times New Roman&quot;;
+color:black"><o:p></o:p></span></p>
+
+	<p class="MsoNormal">
+		<span style="font-size:9.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:black">&quot;</span><span style="font-size:9.0pt;font-family:Consolas;mso-fareast-font-family:&quot;Times New Roman&quot;;
+color:#C41A16">William</span><span style="font-size:9.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:black">&quot;<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		&gt;<span style="font-size:9.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:#0080FF">
+		context.model.user.<span class="highlight">get_Lists</span>().length</span><span style="font-size:9.0pt;font-family:Consolas;mso-fareast-font-family:&quot;Times New Roman&quot;;
+color:black"><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:9.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:#1C00CF">1</span><span style="font-size:9.0pt;font-family:Consolas;mso-fareast-font-family:&quot;Times New Roman&quot;;
+color:black"><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		&gt;<span style="font-size:9.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:#0080FF">
+		context.model.user.get_Lists()[0].<span class="highlight">get_Name</span>()</span><span style="font-size:9.0pt;font-family:Consolas;mso-fareast-font-family:&quot;Times New Roman&quot;;
+color:black"><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:9.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:black">&quot;</span><span style="font-size:9.0pt;font-family:Consolas;mso-fareast-font-family:&quot;Times New Roman&quot;;
+color:#C41A16">My First List</span><span style="font-size:9.0pt;font-family:
+Consolas;mso-fareast-font-family:&quot;Times New Roman&quot;;color:black">&quot;<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		&gt;<span style="font-size:9.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:#0080FF">
+		context.model.user.get_Lists()[0].<span class="highlight">get_Items</span>().length</span><span style="font-size:9.0pt;font-family:Consolas;mso-fareast-font-family:&quot;Times New Roman&quot;;
+color:black"><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:9.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:#1C00CF">1</span><span style="font-size:9.0pt;font-family:Consolas;mso-fareast-font-family:&quot;Times New Roman&quot;;
+color:black"><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		&gt;<span style="font-size:9.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:#0080FF">
+		context.model.user.get_Lists()[0].get_Items()[0].<span class="highlight">get_Description</span>()</span><span style="font-size:9.0pt;font-family:Consolas;mso-fareast-font-family:&quot;Times New Roman&quot;;
+color:black"><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:9.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:black">&quot;</span><span style="font-size:9.0pt;font-family:Consolas;mso-fareast-font-family:&quot;Times New Roman&quot;;
+color:#C41A16">Be Productive!</span><span style="font-size:9.0pt;font-family:
+Consolas;mso-fareast-font-family:&quot;Times New Roman&quot;;color:black">&quot;<o:p></o:p></span></p>
+	</div>
+
+<!-- END: Console output -->
+
+	<p>
+		&nbsp;</p>
+	<p>
+		The next step is to augment our static HTML so that it is dynamically generated:</p>
+	<div class="code-block">
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas; background: yellow; mso-highlight: yellow">
+		@</span><span style="font-size:9.5pt;font-family:Consolas;color:#2B91AF">ExoWeb</span><span 
+			style="font-size:9.5pt;font-family:Consolas">.Render(<span 
+			style="background: yellow; mso-highlight: yellow">@</span><span 
+			style="color:blue">&lt;</span><span style="color:maroon">div</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;<span 
+			style="background: yellow; mso-highlight: yellow">sys-template</span> board&quot;</span>
+		<span style="color: red; background: yellow; mso-highlight: yellow">sys</span><span 
+			style="color: blue; background: yellow; mso-highlight: yellow">:</span><span 
+			style="color: red; background: yellow; mso-highlight: yellow">attach</span><span 
+			style="color: blue; background: yellow; mso-highlight: yellow">=&quot;dataview&quot;</span><span 
+			style="background: yellow; mso-highlight: yellow"> <span style="color:red">
+		dataview</span><span style="color:blue">:</span><span style="color:red">data</span><span 
+			style="color:blue">=&quot;{~ context.model.user, source=window }&quot;</span></span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">div</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;board-title&quot;&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">span</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;board-user&quot;&gt;</span><span 
+			style="background: yellow; mso-highlight: yellow">{# Name}</span><span 
+			style="color:blue">&lt;/</span><span style="color:maroon">span</span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">a</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;board-addlist&quot;</span>
+		<span style="color:red">href</span><span style="color:blue">=&quot;#&quot;</span>
+		<span style="color:red">onclick</span><span style="color:blue">=&quot;return false;&quot;&gt;</span>Add 
+		a list..<span style="color:blue">&lt;/</span><span style="color:maroon">a</span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">span</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;board-status&quot;&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">span</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;board-server-working&quot;&gt;</span>Communicating 
+		with the server...<span style="color:blue">&lt;/</span><span style="color:maroon">span</span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">span</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;board-server-success&quot;&gt;</span>Success<span 
+			style="color:blue">&lt;/</span><span style="color:maroon">span</span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">span</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;board-server-failure&quot;&gt;</span>An 
+		error occurred!<span style="color:blue">&lt;/</span><span style="color:maroon">span</span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">a</span>
+		<span style="color:red">href</span><span style="color:blue">=&quot;#&quot;</span>
+		<span style="color:red">onclick</span><span style="color:blue">=&quot;return false;&quot;&gt;</span>Try 
+		again<span style="color:blue">&lt;/</span><span style="color:maroon">a</span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;/</span><span style="color:maroon">span</span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;/</span><span style="color:maroon">div</span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">div</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;<span 
+			style="background: yellow; mso-highlight: yellow">sys-template</span> 
+		board-background&quot;</span>
+		<span style="color: red; background: yellow; mso-highlight: yellow">sys</span><span 
+			style="color: blue; background: yellow; mso-highlight: yellow">:</span><span 
+			style="color: red; background: yellow; mso-highlight: yellow">attach</span><span 
+			style="color: blue; background: yellow; mso-highlight: yellow">=&quot;dataview&quot;</span><span 
+			style="background: yellow; mso-highlight: yellow"> <span style="color:red">
+		dataview</span><span style="color:blue">:</span><span style="color:red">data</span><span 
+			style="color:blue">=&quot;{~ Lists, transform=orderBy(&#39;Sequence&#39;) }&quot;</span></span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">div</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;board-list&quot;&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">div</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;board-list-title&quot;&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">strong</span><span 
+			style="color:blue">&gt;</span><span 
+			style="background: yellow; mso-highlight: yellow">{# Name}</span><span 
+			style="color:blue">&lt;/</span><span style="color:maroon">strong</span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">span</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;board-deletelist&quot;&gt;&lt;/</span><span 
+			style="color:maroon">span</span><span style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;/</span><span style="color:maroon">div</span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">div</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;<span 
+			style="background: yellow; mso-highlight: yellow">sys-template</span> 
+		board-list-content sortable&quot;</span>
+		<span style="color: red; background: yellow; mso-highlight: yellow">sys</span><span 
+			style="color: blue; background: yellow; mso-highlight: yellow">:</span><span 
+			style="color: red; background: yellow; mso-highlight: yellow">attach</span><span 
+			style="color: blue; background: yellow; mso-highlight: yellow">=&quot;dataview&quot;</span><span 
+			style="background: yellow; mso-highlight: yellow"> <span style="color:red">
+		dataview</span><span style="color:blue">:</span><span style="color:red">data</span><span 
+			style="color:blue">=&quot;{~ Items, transform=orderBy(&#39;Sequence&#39;) }&quot;</span></span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">div</span>
+		<span style="color: red; background: yellow; mso-highlight: yellow">sys</span><span 
+			style="color: blue; background: yellow; mso-highlight: yellow">:</span><span 
+			style="color: red; background: yellow; mso-highlight: yellow">class</span><span 
+			style="color: blue; background: yellow; mso-highlight: yellow">=&quot;{# 
+		Priority.Name}&quot;</span><span style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">div</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;board-list-item&quot;&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">div</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;board-list-item-text&quot;&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:7">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">span</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;board-list-item-sequence&quot;&gt;&lt;</span><span 
+			style="color:maroon">span</span><span style="color:blue">&gt;</span><span 
+			style="background: yellow; mso-highlight: yellow">{# 
+		Sequence}</span><span style="color:blue">&lt;/</span><span style="color:maroon">span</span><span 
+			style="color:blue">&gt;</span>: <span style="color:blue">&lt;/</span><span 
+			style="color:maroon">span</span><span style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:7">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">span</span><span 
+			style="color:blue">&gt;</span><span 
+			style="background: yellow; mso-highlight: yellow">{# Description}</span><span 
+			style="color:blue">&lt;/</span><span style="color:maroon">span</span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;/</span><span style="color:maroon">div</span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">div</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;board-list-item-age-description&quot;&gt;</span>Item Age Description (eg, one minute ago)<span 
+			style="color:blue">&lt;/</span><span style="color:maroon">div</span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">span</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;board-list-item-priority&quot;&gt;&lt;/</span><span 
+			style="color:maroon">span</span><span style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">a</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;board-list-deleteitem&quot;</span>
+		<span style="color:red">href</span><span style="color:blue">=&quot;#&quot;</span>
+		<span style="color:red">onclick</span><span style="color:blue">=&quot;return 
+		false;&quot;&gt;&lt;/</span><span style="color:maroon">a</span><span style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;/</span><span style="color:maroon">div</span><span 
+			style="color:blue">&gt;&lt;/</span><span style="color:maroon">div</span><span 
+			style="color:blue">&gt;&lt;/</span><span style="color:maroon">div</span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">div</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;board-list-additem&quot;&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">input</span>
+		<span style="color:red">type</span><span style="color:blue">=&quot;text&quot;</span>
+		<span style="color:red">style</span><span style="color:blue">=&quot;</span><span 
+			style="color:red">display</span><span style="color:blue">:none;&quot;</span>
+		<span style="color:red">value</span><span style="color:blue">=&quot;&quot;</span>
+		<span style="color:blue">/&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">a</span>
+		<span style="color:red">href</span><span style="color:blue">=&quot;#&quot;</span>
+		<span style="color:red">onclick</span><span style="color:blue">=&quot;return false;&quot;&gt;</span>Add 
+		an item...<span style="color:blue">&lt;/</span><span style="color:maroon">a</span><span 
+			style="color:blue">&gt;&lt;/</span><span style="color:maroon">div</span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;/</span><span style="color:maroon">div</span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;/</span><span style="color:maroon">div</span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas;color:blue">&lt;/</span><span style="font-size:9.5pt;
+font-family:Consolas;color:maroon">div</span><span style="font-size:9.5pt;
+font-family:Consolas;color:blue">&gt;</span><span style="font-size:9.5pt;
+font-family:Consolas">)<o:p></o:p></span></p>
+	</div>
+
+	<p>
+		First, we have wrapped the static HTML in a method call to
+				<span class="code">ExoWeb.Render</span>.&nbsp; 
+		This causes the server-side templating engine to generate dynamic markup, and 
+		also enables the browser to update the markup as changes are made client-side.</p>
+	<p>
+		In addition to enabling template rendering we must also make the markup 
+		dyanamic.&nbsp; The changes necessary to make that happen have been highlighted. 
+		We have added a special class, &quot;sys-template&quot;, which tells the templating engine 
+		that an element is special.&nbsp; The <span class="code">sys:attach</span> 
+		attribute signifies that a control should be attached to the element, where the 
+		value of the attribute is the name of the control to attach.&nbsp;
+		The control in this case is a <span class="code">dataview</span>, which is used to create a new "data binding context" on the page.&nbsp;
+		In other words, it links data to a block of HTML, and when the data changes the DOM is updated to reflect the changes.&nbsp;
+		The value of the <span class="code">data</span> property tells the templating engine how to bind to the model.</p>
+
+	<p>
+		The templating engine can also bind the value of a property to the text of an 
+		element.&nbsp; We use this feature to display the user&#39;s name, each list&#39;s name, 
+		and the description of each task.</p>
+	<p>
+		With all of this in place, our board now displays the data that is stored in the 
+		database...minus the description of the item&#39;s age (more on that later).</p>
+	<p>
+		<img alt="" class="style1" src="bound-ui.png" /></p>
+
+	<hr />
+	<ol>
+		<!-- Snippet 1 -->
+		<li>Insert the following code snippet into <strong>Views\Home\Index.cshtml</strong>,
+			before the <i>Main board interface</i>:
+			<div class="snippet">
+				<pre>
+@*
+Exo-model declaration
+*@
+
+@ExoWeb.Model(new 
+{
+	user = Model.Include("Lists.Items", "Priority.All")
+})
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+		<!-- Snippet 2 -->
+		<li>Insert the following code snippet into <strong>Views\Home\Index.cshtml</strong>,
+			after the <i>Main board interface</i>, replacing the existing static markup:
+			<div class="snippet">
+				<pre>
+@ExoWeb.Render(@&lt;div class="sys-template board" sys:attach="dataview" dataview:data="{~ context.model.user, source=window }"&gt;
+	&lt;div class="board-title"&gt;
+		&lt;span class="board-user"&gt;{# Name}&lt;/span&gt;
+		&lt;a class="board-addlist" href="#" onclick="return false;"&gt;Add a list..&lt;/a&gt;
+	&lt;/div&gt;
+	&lt;div class="sys-template board-background" sys:attach="dataview" dataview:data="{~ Lists, transform=orderBy('Sequence') }"&gt;
+		&lt;div class="board-list"&gt;
+			&lt;div class="board-list-title"&gt;
+				&lt;strong&gt;{# Name}&lt;/strong&gt;
+				&lt;span class="board-deletelist"&gt;&lt;/span&gt;
+			&lt;/div&gt;
+			&lt;div class="sys-template board-list-content sortable" sys:attach="dataview" dataview:data="{~ Items, transform=orderBy('Sequence') }"&gt;
+				&lt;div sys:class="{# Priority.Name}"&gt;
+					&lt;div class="board-list-item"&gt;
+						&lt;div class="board-list-item-text"&gt;
+							&lt;span&gt;{# Description}&lt;/span&gt;
+						&lt;/div&gt;
+						&lt;div class=&quot;board-list-item-age-description&quot;&gt;Item Age Description (eg, one minute ago)&lt;/div&gt;
+						&lt;span class="board-list-item-priority"&gt;&lt;/span&gt;
+						&lt;a class="board-list-deleteitem" href="#" onclick="return false;"&gt;&lt;/a&gt;
+					&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+			&lt;div class="board-list-additem"&gt;
+				&lt;input type="text" style="display:none;" value="" /&gt;
+				&lt;a href="#" onclick="return false;"&gt;Add an item...&lt;/a&gt;&lt;/div&gt;
+		&lt;/div&gt;
+	&lt;/div&gt;
+&lt;/div&gt;)				
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+	</ol>
+</body>

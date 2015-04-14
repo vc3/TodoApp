@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using ExoModel;
@@ -29,20 +30,28 @@ namespace TodoApp.Models
 		[AllowedValues("Priority.All")]
 		public Priority Priority { get; set; }
 
-		// The age of the item relative to the curent time of the user.
+		/// <summary>
+		/// The age of the item relative to the curent time of the user.
+		/// </summary>
 		[NotMapped]
 		public TimeSpan Age { get; private set; }
 
-		// Calculates the age of the item relative to the current time.
+		/// <summary>
+		/// Calculates the age of the item relative to the current time.
+		/// </summary>
 		static Rule CalculateAge = Rule<ListItem>.Calculate(
 			item => item.Age,
-			item => item.DateCreated == null ? TimeSpan.Zero : item.List.User.CurrentTime.Subtract(item.DateCreated.Value));
+			item => item.DateCreated == null || item.List == null || item.List.User == null ? TimeSpan.Zero : item.List.User.CurrentTime.Subtract(item.DateCreated.Value));
 
-		// A friendly description of the relative age of the item.
+		/// <summary>
+		/// A friendly description of the relative age of the item.
+		/// </summary>
 		[NotMapped]
 		public string AgeDescription { get; private set; }
 
-		// Calculates the description of the age of the item.
+		/// <summary>
+		/// Calculates the description of the age of the item.
+		/// </summary>
 		static Rule CalculateAgeDescription = Rule<ListItem>.Calculate(
 			item => item.AgeDescription,
 			item => "created " + (

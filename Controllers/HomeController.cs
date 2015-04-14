@@ -8,7 +8,7 @@ namespace TodoApp.Controllers
 		[Authorize]
 		public ActionResult Index()
 		{
-			var user = (User)User.Identity;
+			var user = (User) User.Identity;
 			return View(user);
 		}
 	}

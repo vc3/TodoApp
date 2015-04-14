@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2008/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>demo_usercontroller</Title>
+			<Shortcut>demo_usercontroller</Shortcut>
+			<Description></Description>
+			<Author>VC3</Author>
+			<Imports>
+				<Namespace>System.Web.Mvc</Namespace>
+				<Namespace>TodoApp.Models</Namespace>
+				<Namespace>DotNetOpenAuth.OpenId.RelyingParty</Namespace>
+				<Namespace>System.Web.Security</Namespace>
+				<Namespace>DotNetOpenAuth.OpenId</Namespace>
+				<Namespace>DotNetOpenAuth.OpenId.Extensions.SimpleRegistration</Namespace>
+				<Namespace>DotNetOpenAuth.OpenId.Extensions.AttributeExchange</Namespace>
+				<Namespace>TodoApp.Models</Namespace>
+				<Namespace>DotNetOpenAuth.Messaging</Namespace>
+			</Imports>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+							<Code Language="csharp"><![CDATA[
+	public class UserController : Controller
+	{
+		private static OpenIdRelyingParty openid = new OpenIdRelyingParty();
+
+		public ActionResult Index()
+		{
+			if (HttpContext.User.Identity.IsAuthenticated)
+				return RedirectToAction("Index", "Home");
+
+			return View();
+		}
+
+		[HttpGet]
+		public ActionResult LogOff()
+		{
+			Session.Abandon();
+			FormsAuthentication.SignOut();
+
+			return RedirectToAction("Index", "User");
+		}
+
+		[ValidateInput(false)]
+		public ActionResult Authenticate()
+		{
+			string provider = Request.Form["openid_identifier"];
+
+			var response = openid.GetResponse();
+			if (response == null)
+			{
+				Identifier id = null;
+				if (Identifier.TryParse(provider, out id))
+				{
+					// Redirect user to provider for authentication
+					try
+					{
+						var request = openid.CreateRequest(id);
+						var fields = new ClaimsRequest()
+						{
+							Email = DemandLevel.Require,
+							FullName = DemandLevel.Require,
+							Nickname = DemandLevel.Require
+						};
+						request.AddExtension(fields);
+
+						var fetch = new FetchRequest();
+						fetch.Attributes.AddRequired(WellKnownAttributes.Name.First);
+						fetch.Attributes.AddRequired(WellKnownAttributes.Name.Last);
+						fetch.Attributes.AddRequired(WellKnownAttributes.Name.Alias);
+                        fetch.Attributes.AddRequired(WellKnownAttributes.Name.FullName);
+						request.AddExtension(fetch);
+
+						return request.RedirectingResponse.AsActionResult();
+					}
+					catch (ProtocolException e)
+					{
+						ViewData["Message"] = e.Message;
+					}
+				}
+			}
+			else
+			{
+				// Handle response from provider
+				switch (response.Status)
+				{
+					case AuthenticationStatus.Authenticated:
+						var claimedIdentifier = response.ClaimedIdentifier.ToString();
+						var user = TodoContext.Current.Users.Where(u => u.OpenId == claimedIdentifier).FirstOrDefault();
+
+						if (user == null)
+						{
+							var claim = response.GetExtension<ClaimsResponse>();
+							var fetch = response.GetExtension<FetchResponse>();
+
+							user = new User
+							{
+								Name = fetch.Attributes[WellKnownAttributes.Name.First].Values[0],
+								OpenId = claimedIdentifier
+							};
+
+							TodoContext.Current.Users.Add(user);
+							TodoContext.Current.SaveChanges();
+						}
+
+						FormsAuthenticationTicket authTicket = new
+							FormsAuthenticationTicket(1, //version
+							response.ClaimedIdentifier, // user name
+							DateTime.Now,             //creation
+							DateTime.Now.AddMinutes(30), //Expiration
+							false, //Persistent
+							user.OpenId); 					
+									
+						string encTicket = FormsAuthentication.Encrypt(authTicket);
+
+						this.Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
+
+						return RedirectToAction("Index", "Home");
+
+						break;
+					case AuthenticationStatus.Canceled:
+						break;
+					case AuthenticationStatus.Failed:
+						break;
+				}
+			}
+
+			return RedirectToAction("Index", "Home");
+		}
+	}
+]]>
+							</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

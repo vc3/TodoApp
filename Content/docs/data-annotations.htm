@@ -1,0 +1,258 @@
+﻿<style type="text/css">
+	body 
+	{
+		font-family: Corbel, Tahoma, Verdana;
+	}
+	.MsoNormal
+	{
+		margin: 1px;
+	}
+	.code
+	{
+		font-family: Consolas, Courier New, Sans-Serif;
+	}
+	.style1
+	{
+		width: 406px;
+		height: 342px;
+	}
+	.style2
+	{
+		font-family: Consolas;
+	}
+</style>
+<body>
+	<p style="font-size: x-large;">
+		<strong>Data Annotations</strong>
+	</p>
+	<p>
+		Exo supports rich attribute-based validation for models using <strong>
+		System.ComponentModel.DataAnnotations</strong> attributes.&nbsp; The <strong>
+		ExoRule</strong> assembly includes a robust set of property-centric validation 
+		rules, including:</p>
+	<ul>
+		<li><strong>AllowedValuesRule</strong><em> - identifies the allowed values for an 
+			entity reference or list property in the model and validates selected items are 
+			valid</em></li>
+		<li><strong>CompareRule</strong> - <em>compares the value of the target property to 
+			another property in the model</em></li>
+		<li><strong>ListLengthRule</strong> - <em>ensures the number of items in a list is 
+			within a specified range</em></li>
+		<li><strong>RangeRule</strong> - <em>ensures a numeric property value is within a 
+			specified range</em></li>
+		<li><strong>RequiredIfRule</strong> - <em>ensures the property has a value based on 
+			the value of another property in the model</em></li>
+		<li><strong>RequiredRule</strong> - <em>ensures the property has a value</em></li>
+		<li><strong>StringFormatRule</strong><em> - validates the format of string 
+			properties using regular expressions</em></li>
+		<li><strong>StringLengthRule</strong><em> - ensures the length of a string property 
+			value is within a specified range</em></li>
+	</ul>
+	<p>
+		The <strong>ExoRule.DataAnnotations</strong> assembly provides the <strong>
+		AnnotationsRuleProvider</strong>, which detects and translates data annotation 
+		attributes into corresponding model rules.&nbsp; This assembly adds the 
+		following additional data annotion attributes: <strong>AllowedValuesAttribute</strong>,
+		<strong>CompareAttribute</strong>, and <strong>ListLengthAttribute</strong>.&nbsp; 
+		The annotations therefore translate as follows:</p>
+	<ul>
+		<li>AllowedValuesAttribute
+			→ AllowedValuesRule<strong><em> </em></strong></li>
+		<li>CompareAttribute
+			→ CompareRule<strong><em> </em></strong></li>
+		<li>ListLengthAttribute
+			→ ListLengthRule<strong><em> </em></strong></li>
+		<li>RangeAttribute
+			→ RangeRule<strong><em> </em></strong></li>
+		<li>RequiredAttribute
+			→ RequiredRule<strong><em> </em></strong></li>
+		<li>RegularExpressionAttribute → StringFormatRule<strong><em> </em></strong></li>
+		<li>StringLengthAttribute
+			→ StringLengthRule<strong><em> </em></strong></li>
+	</ul>
+	<p>
+		The <strong>ExoModel.EntityFramework</strong> assembly also leverages data 
+		annotations to help describe the model:</p>
+	<ul>
+		<li><strong>DisplayAttribute</strong> - <em>used to determine the (potentially 
+			localized) label for a property in the model</em></li>
+		<li><strong>DisplayFormatAttribute</strong> - <em>used to determine the format 
+			specifier to use for a property, such as date and numeric formats</em></li>
+		<li><strong>MetadataTypeAttribute</strong> - <em>used to look up buddy classes for 
+			model-first or database-first generated EF classes</em> </li>
+		<li><strong>NotMappedAttribute</strong> - <em>used to detect and indicate that a 
+			property in the model is not persisted, which is useful for optimizing rule 
+			execution</em></li>
+	</ul>
+	<p>
+		In the following example, all of the attributes are data annotations, and all of 
+		them are leveraged by EF and Exo to support a rich server and client model with 
+		no additional effort.</p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas">[<span style="color:#2B91AF">Required</span>]<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas;color:blue">public</span><span style="font-size:
+9.5pt;font-family:Consolas"> <span style="color:blue">string</span> Description {
+		<span style="color:blue">get</span>; <span style="color:blue">set</span>; }<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><o:p>&nbsp;</o:p><o:p>&nbsp;</o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas">[<span style="color:#2B91AF">DisplayFormat</span>(DataFormatString 
+		= <span style="color:#A31515">&quot;d&quot;</span>)]<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas;color:blue">public</span><span style="font-size:
+9.5pt;font-family:Consolas"> <span style="color:#2B91AF">DateTime</span>? DueDate {
+		<span style="color:blue">get</span>; <span style="color:blue">set</span>; }<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><o:p>&nbsp;</o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas">[<span style="color:#2B91AF">AllowedValues</span>(<span 
+			style="color:#A31515">&quot;Priority.All&quot;</span>)]<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas;color:blue">public</span><span style="font-size:
+9.5pt;font-family:Consolas"> <span style="color:#2B91AF">Priority</span> Priority {
+		<span style="color:blue">get</span>; <span style="color:blue">set</span>; }<o:p></o:p></span></p>
+	<p>
+		&nbsp;In <strong>ExoWeb</strong>, these anotations translate directly to the 
+		client model as corresponding model metadata or client rules, resulting in a 
+		wide variety of automatic behavior in the user interface.&nbsp; For example, 
+		when editing instances of this type (todo items), the client dialog template is 
+		just:</p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas;color:blue">&lt;</span><span style="font-size:9.5pt;
+font-family:Consolas;color:maroon">div</span><span style="font-size:9.5pt;
+font-family:Consolas"> <span style="color:red">class</span><span style="color:blue">=&quot;sys-template 
+		board-list-edititem-dialog&quot;</span> <span style="color:red">sys</span><span 
+			style="color:blue">:</span><span style="color:red">attach</span><span 
+			style="color:blue">=&quot;dataview&quot;</span> <span style="color:red">width</span><span 
+			style="color:blue">=&quot;400&quot;&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">div</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;dialog-content&quot;&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">div</span>
+		<span style="color:red">sys</span><span style="color:blue">:</span><span 
+			style="color:red">attach</span><span style="color:blue">=&quot;content&quot;</span>
+		<span style="color:red">content</span><span style="color:blue">:</span><span 
+			style="color:red">template</span><span style="color:blue">=&quot;form&quot;</span>
+		<span style="color:red">content</span><span style="color:blue">:</span><span 
+			style="color:red">data</span><span style="color:blue">=&quot;{@ Description 
+		}&quot;&gt;&lt;/</span><span style="color:maroon">div</span><span style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">div</span>
+		<span style="color:red">sys</span><span style="color:blue">:</span><span 
+			style="color:red">attach</span><span style="color:blue">=&quot;content&quot;</span>
+		<span style="color:red">content</span><span style="color:blue">:</span><span 
+			style="color:red">template</span><span style="color:blue">=&quot;form&quot;</span>
+		<span style="color:red">content</span><span style="color:blue">:</span><span 
+			style="color:red">data</span><span style="color:blue">=&quot;{@ DueDate }&quot;&gt;&lt;/</span><span 
+			style="color:maroon">div</span><span style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">div</span>
+		<span style="color:red">sys</span><span style="color:blue">:</span><span 
+			style="color:red">attach</span><span style="color:blue">=&quot;content&quot;</span>
+		<span style="color:red">content</span><span style="color:blue">:</span><span 
+			style="color:red">template</span><span style="color:blue">=&quot;form&quot;</span>
+		<span style="color:red">content</span><span style="color:blue">:</span><span 
+			style="color:red">data</span><span style="color:blue">=&quot;{@ Priority }&quot;&gt;&lt;/</span><span 
+			style="color:maroon">div</span><span style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;/</span><span style="color:maroon">div</span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">div</span>
+		<span style="color:red">class</span><span style="color:blue">=&quot;dialog-footer&quot;&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">input</span>
+		<span style="color:red">type</span><span style="color:blue">=&quot;button&quot;</span>
+		<span style="color:red">sys</span><span style="color:blue">:</span><span 
+			style="color:red">command</span><span style="color:blue">=&quot;ok&quot;</span>
+		<span style="color:red">onclick</span><span style="color:blue">=&quot;return false;&quot;</span>
+		<span style="color:red">value</span><span style="color:
+blue">=&quot;Ok&quot;</span> <span style="color:blue">/&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;</span><span style="color:maroon">input</span>
+		<span style="color:red">type</span><span style="color:blue">=&quot;button&quot;</span>
+		<span style="color:red">sys</span><span style="color:blue">:</span><span 
+			style="color:red">command</span><span style="color:blue">=&quot;cancel&quot;</span>
+		<span style="color:red">onclick</span><span style="color:blue">=&quot;return false;&quot;</span>
+		<span style="color:red">value</span><span style="color:
+blue">=&quot;Cancel&quot;</span> <span style="color:blue">/&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:blue">&lt;/</span><span style="color:maroon">div</span><span 
+			style="color:blue">&gt;</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas;color:blue">&lt;/</span><span style="font-size:9.5pt;
+font-family:Consolas;color:maroon">div</span><span style="font-size:9.5pt;
+font-family:Consolas;color:blue">&gt;<o:p></o:p></span></p>
+	<p>
+		Which results in rendering:</p>
+	<p>
+		<img src="edit-dialog.png" /></p>
+	<p>
+		The user interface leverages model information and rules derived from data 
+		annotations as follows:</p>
+	<ul>
+		<li>The <span class="style2">RequiredAttribute</span> causes the <strong>Description</strong> property to be validated by a 
+			client rule to ensure a value is specified.</li>
+		<li>The <strong>DisplayFormatAttribute</strong> enables automatic formatting of the
+			<strong>DueDate</strong> property using the short date format &quot;<strong>d</strong>&quot;.</li>
+		<li>The <strong>AllowedValuesAttribute</strong> enables the default form templates 
+			in Exo to automatically display a drop down list with the valid priorities when 
+			editing the <strong>Priority</strong> property.</li>
+	</ul>
+	<hr />
+		<ol>
+		<!-- Snippet 1 -->
+		<li>Insert the following code snippet into the <strong>TodoContext</strong> class to 
+			enable data annotation rule support:
+			<div class="snippet">
+				<pre>
+		static IRuleProvider annotationRules = new AnnotationsRuleProvider(typeof(List).Assembly);
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+		<li>Replace the contents of the "ok" button handler in the <strong>scripts/board-list-edititem.js</strong> file with the following snippet:
+			<div class="snippet">
+				<pre>
+if (item.meta.conditions().length === 0) {
+	context.server.enableSave(item);
+}
+else {
+	return false;
+}
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+	</ol>
+</body>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2008/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>demo_homecontroller</Title>
+			<Shortcut>demo_homecontroller</Shortcut>
+			<Description></Description>
+			<Author>VC3</Author>
+			<Imports>
+				<Namespace>System.Web.Mvc</Namespace>
+				<Namespace>TodoApp.Models</Namespace>
+			</Imports>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+							<Code Language="csharp"><![CDATA[
+	public class HomeController : Controller
+	{
+        [Authorize]
+		public ActionResult Index()
+		{
+            var user = (User) User.Identity;
+			return View(user);
+		}
+	}
+]]>
+							</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

@@ -1,0 +1,202 @@
+﻿<style type="text/css">
+	body 
+	{
+		font-family: Corbel, Tahoma, Verdana;
+	}
+	.MsoNormal
+	{
+		margin: 1px;
+	}
+	.code
+	{
+		font-family: Consolas, Courier New, Sans-Serif;
+	}
+	.style1
+	{
+		font-family: Consolas;
+	}
+	.style2
+	{
+		width: 788px;
+		height: 307px;
+	}
+	.style3
+	{
+		width: 798px;
+		height: 328px;
+	}
+</style>
+<body>
+	<p style="font-size: x-large;">
+		<strong>Custom Validation</strong>
+	</p>
+	<p>
+		All too often with validation approaches, standard validation like required 
+		fields and formatting are easy, while custom validation requires significantly 
+		more effort.&nbsp; With Exo, standard validation is extremely easy--primarily 
+		enabled by applying simple data annotations to the model.&nbsp; However, Exo 
+		also makes custom validation extremely easy by supporting custom model 
+		validation rules and extending the model to track and expose conditions like 
+		errors and warnings.&nbsp; The following is an example of custom validation rule 
+		that asserts an error condition in the model:</p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas;color:gray">///</span><span style="font-size:9.5pt;
+font-family:Consolas;color:green"> </span>
+		<span style="font-size:9.5pt;
+font-family:Consolas;color:gray">&lt;summary&gt;</span><span style="font-size:
+9.5pt;font-family:Consolas"><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas;color:gray">///</span><span style="font-size:9.5pt;
+font-family:Consolas;color:green"> Ensures that the due date is on or after the day on 
+		which the item was created.</span><span style="font-size:9.5pt;
+font-family:Consolas"><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas;color:gray">///</span><span style="font-size:9.5pt;
+font-family:Consolas;color:green"> </span>
+		<span style="font-size:9.5pt;
+font-family:Consolas;color:gray">&lt;/summary&gt;</span><span style="font-size:
+9.5pt;font-family:Consolas"><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas;color:blue">static</span><span style="font-size:
+9.5pt;font-family:Consolas"> <span style="color:#2B91AF">Error</span> 
+		ValidateFutureDueDate = <span style="color:blue">new</span>
+		<span style="color:#2B91AF">Error</span>&lt;<span style="color:#2B91AF">ListItem</span>&gt;(<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:#A31515">&quot;The Due Date must be today or some time in 
+		the future&quot;</span>,<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span>item =&gt; item.DateCreated != <span style="color:blue">null</span> &amp;&amp; 
+		item.DueDate != <span style="color:blue">null</span> &amp;&amp; item.DueDate.Value &lt; 
+		item.DateCreated.Value.Date);<o:p></o:p></span></p>
+	<p>
+		This simple single statement defines a unique error condition,
+		<span class="style1"><strong>ListItem.ValidateFutureDueDate</strong></span>, the 
+		error message to display to the user, and a condition expression that asserts 
+		when the error exists.&nbsp; This strongly-typed <span class="style1"><strong>
+		Error</strong></span> instance creates a rule that will run automatically when 
+		either the <span class="style1"><strong>DateCreated</strong></span> or
+		<span class="style1"><strong>DueDate</strong></span> changes.&nbsp; Like with 
+		calculated property rules, Exo supports automatically projecting server rules up 
+		to the client as Javascript rules, so this rule will also automatically run on 
+		the client in response to changes to the client model.&nbsp; As with the server 
+		model, the client model raises events when conditions in the model change, 
+		thereby allowing the declaratively linked UI to automatically update and display 
+		or hide the error as necessary, using the exact same approach used for standard 
+		validation rules like <span class="style1"><strong>Required</strong></span> or
+		<span class="style1"><strong>StringFormat</strong></span>.&nbsp;
+	</p>
+	<p>
+		The following FireBug trace shows this rule being sent as part of the type JSON 
+		metadata to the client:</p>
+	<p>
+		<img class="style2" src="custom-validation-rule-json.PNG" /></p>
+	<p>
+		This is all the information the client needs to create a corresponding rule 
+		asserting the same error on the client as defined on the server.&nbsp; While 
+		this was a simple rule that just runs on property change and is limited to 
+		properties on the same entity, rules can be much more complex, such as:</p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas;color:gray">///</span><span style="font-size:9.5pt;
+font-family:Consolas;color:green"> </span>
+		<span style="font-size:9.5pt;
+font-family:Consolas;color:gray">&lt;summary&gt;</span><span style="font-size:
+9.5pt;font-family:Consolas"><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas;color:gray">///</span><span style="font-size:9.5pt;
+font-family:Consolas;color:green"> Ensure that items in the same list have unique text 
+		descriptions.</span><span style="font-size:9.5pt;font-family:Consolas"><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas;color:gray">///</span><span style="font-size:9.5pt;
+font-family:Consolas;color:green"> </span>
+		<span style="font-size:9.5pt;
+font-family:Consolas;color:gray">&lt;/summary&gt;</span><span style="font-size:
+9.5pt;font-family:Consolas"><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas;color:blue">static</span><span style="font-size:
+9.5pt;font-family:Consolas"> <span style="color:#2B91AF">Error</span> ValidateUniqueText 
+		= <span style="color:blue">new</span> <span style="color:#2B91AF">Error</span>&lt;<span 
+			style="color:#2B91AF">ListItem</span>&gt;(<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:#A31515">&quot;This appears to be a duplicate!&quot;</span>,<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span>item =&gt; item.List != <span style="color:blue">null</span> &amp;&amp; 
+		item.List.Items.Any(i =&gt; i != item &amp;&amp; i.Description == item.Description),<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:#A31515">&quot;Description&quot;</span>)<span style="mso-tab-count:
+3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+		<span style="color:green">// Only attach the error to the Description property 
+		on the root instance</span><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:
+9.5pt;font-family:Consolas"><span style="mso-tab-count:1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span>.OnInitExisting();<span style="mso-tab-count:2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span><span style="color:green">// Ensure validation runs on existing instances 
+		since this rule is not enforced<o:p></o:p></span></span></p>
+	<p>
+		This rule goes further by performing validation against all of the items within 
+		a list to ensure uniqueness.&nbsp; This rule specifically specifies that the 
+		error should only be associated with the item being validated, as by default the 
+		error would be attached to all entities and properties the rule interacts with.&nbsp; 
+		Also, this rule is configured to run when existing instances are initialized 
+		(loaded from the database or persistence medium), assuming that existing saved 
+		items may have this error condition.&nbsp; This ensures that the UI, when 
+		initially rendered via templates on the server, will already show the error 
+		state and the model sent from the server will already contain the error.</p>
+	<p>
+		The validation rule projects to the client as follows:</p>
+	<p>
+		<img class="style3" src="custom-validation-rule-json2.PNG" /></p>
+	<p>
+		This rule automatically runs on both client and server whenever items are added 
+		or removed from a list or&nbsp; the description of an item changes, as denoted 
+		by the <span class="style1"><strong>onChangeOf</strong></span> attribute in the 
+		JSON.&nbsp; Exo automatically determines the property path dependencies for 
+		expression-based server rules like this, eliminating the guess work and mistakes 
+		regarding when to trigger validation.&nbsp; With Exo the model is always up to 
+		date, always validated, always consistent, both client and server, statelessly, 
+		seemlessly.</p>
+	<hr />
+		<ol>
+		<!-- Snippet 1 -->
+		<li>Insert the following code snippet into <strong>ListItem.cs</strong>:
+			<div class="snippet">
+				<pre>
+				/// &lt;summary&gt;
+				/// Ensures that the due date is on or after the day on which the item was created.
+				/// &lt;/summary&gt;
+				static Error ValidateFutureDueDate = new Error&lt;ListItem&gt;(
+					"The Due Date must be today or some time in the future",
+					item =&gt; item.DateCreated != null && item.DueDate != null && item.DueDate.Value &lt; item.DateCreated.Value.Date);
+
+				/// &lt;summary&gt;
+				/// Ensure that items in the same list have unique text descriptions.
+				/// &lt;/summary&gt;
+				static Error ValidateUniqueText = new Error&lt;ListItem&gt;(
+					"This appears to be a duplicate!",
+					item =&gt; item.List != null && item.List.Items.Any(i =&gt; i != item && i.Description == item.Description),
+					"Description")			// Only attach the error to the Description property on the root instance
+					.OnInitExisting();		// Ensure validation runs on existing instances since this rule is not enforced
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+	</ol>
+</body>

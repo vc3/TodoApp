@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Todo App Walkthrough</title>
+	<style type="text/css">
+		a { color: #000; text-decoration: none; }
+		a.link {color:#00F; text-decoration:underline;}
+		a:hover { text-decoration: underline; }
+		.container { border: none; margin: 0px; padding: 0px; }
+		.navigation { min-width: 250px; vertical-align: top; width: 250px; height: 100%; margin-right: 10px; font-size: large; background-color: #EEE; padding: 5px; overflow: auto; }
+		.content { width: 100%; height: 100%; vertical-align: top; padding: 5px 10px 5px 10px; overflow: auto; }
+		.title { font-size: x-large; font-weight: bold; }
+		.MsoNormal { margin: 1px; }
+		.navigation li { cursor: pointer; }
+		.navigation li:hover { text-decoration: underline; }
+		.snippet { max-height: 100px; margin-left: 0px; overflow: auto; border: 1px solid lightgray; }
+		.copy-snippet { color: #444; height: 30px; margin: 10px 0px 20px 0px; background-image: -webkit-linear-gradient(top, white 0%, #F3F3F3 100%); border-radius: 3px 3px 3px 3px; border-color: #CECECE; border-width: 1px; font-family: 'Helvetica Neue' , Arial, Helvetica, sans-serif; font-size: 14px;font-weight: bold; min-width: 100px; line-height: 18px; padding: 3px; }
+		.copy-snippet:hover { color: white; background-image: -webkit-linear-gradient(top, #2478A8 0%, #1B5A7E 100%); border-color: #1F6993; }
+		#instructions li { margin: 5px 0px 5px 0px; position: relative; }
+		.code-inline {border:1px solid #d0d0d0; padding:1px 2px; background:#e0e0e0;}
+		.code-string {color:#822; font-weight:bold;}
+	</style>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript" src="../../scripts/jquery.ba-hashchange.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="../../scripts/jquery.zclip.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+
+			// Ensure the navigation and content areas are resized to the height of the window
+			$("#container").css("height", $(window).height());
+			$(window).resize(function () {
+				$("#container").css("height", $(window).height());
+				$("#instructions div.snippet").css("max-width", $(window).width() - 325);
+			});
+
+			$(window).hashchange(function () {
+				var hash = location.hash.substr(1, location.hash.length - 1);
+
+				$(".navigation li").css("font-weight", "normal");
+				$("#li-" + hash).css("font-weight", "bold");
+				$("#doc").load(hash + "\/doc.htm");
+				$("#instructions").load(hash + "\/instructions.htm", function () {
+					$("input.copy-snippet").zclip({
+						path: '../../scripts/ZeroClipboard.swf',
+						copy: function () { return $(this).parent().children(".snippet").text(); }
+					});
+					$("#instructions div.snippet").css("max-width", $(window).width() - 325);
+				});
+			});
+
+			$(window).hashchange();
+
+		});
+	</script>
+</head>
+<body style="font-family: Corbel; padding: 0px; margin: 0px;">
+
+<table id="container" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+	<td class="navigation">
+		<p class="title">&nbsp;Todo App</p>
+		<ol>
+			<li id="li-create-mvc-application"><a href="#create-mvc-application">Create MVC Application</a></li>
+			<li id="li-add-nuget-references"><a href="#add-nuget-references">Add NuGet References</a></li>
+			<li id="li-create-model"><a href="#create-model">Create Model</a></li>
+			<li id="li-create-login-page"><a href="#create-login-page">Create Login Page</a></li>
+			<li id="li-add-static-files"><a href="#add-static-files">Add Static Files</a></li>
+			<li id="li-prototype-main-page"><a href="#prototype-main-page">Prototype Main Page</a></li>
+			<li id="li-bind-to-model"><a href="#bind-to-model">Bind to Model</a></li>
+			<li id="li-adding-items"><a href="#adding-items">Adding Items</a></li>
+			<li id="li-enabling-autosave"><a href="#enabling-autosave">Enabling Auto Save</a></li>
+			<li id="li-sorting-items"><a href="#sorting-items">Sorting Items</a></li>
+			<li id="li-deleting-items"><a href="#deleting-items">Deleting Items</a></li>
+			<li id="li-editing-items"><a href="#editing-items">Editing Items</a></li>
+			<li id="li-data-annotations"><a href="#data-annotations">Data Annotations</a></li>
+			<li id="li-calculated-properties"><a href="#calculated-properties">Calculated Properties</a></li>
+			<li id="li-custom-validation"><a href="#custom-validation">Custom Validation</a></li>
+			<li id="li-adding-and-deleting-lists"><a href="#adding-and-deleting-lists">Adding & Deleting Lists</a></li>
+
+		</ol>
+	</td>
+	<td class="content">
+		<div id="doc">
+			<p style="font-size: x-large;">
+				<strong>Overview</strong>
+			</p>
+			<p>
+				The Todo App walkthrough will show you how to create a single page todo application using Entity Framework, MVC, and the Exo open source libraries.  Please follow the steps on the left in order to create your first Exo application!
+			</p>
+		</div>
+		<hr />
+		<div id="instructions"></div>
+	</td>
+</tr>
+</table>
+
+</body>
+</html>

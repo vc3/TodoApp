@@ -124,6 +124,7 @@
   <ItemGroup>
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Controllers\WalkthroughController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -139,6 +140,41 @@
     <Content Include="Content\board.css" />
     <Content Include="Content\delete-focus.png" />
     <Content Include="Content\delete.png" />
+    <Content Include="Content\docs\add-input.png" />
+    <Content Include="Content\docs\add-link.png" />
+    <Content Include="Content\docs\add-list-dialog.png" />
+    <Content Include="Content\docs\add-list-link.png" />
+    <Content Include="Content\docs\board-status.png" />
+    <Content Include="Content\docs\bound-ui.png" />
+    <Content Include="Content\docs\ClassDiagram.png" />
+    <Content Include="Content\docs\custom-validation-rule-json.PNG" />
+    <Content Include="Content\docs\custom-validation-rule-json2.PNG" />
+    <Content Include="Content\docs\edit-dialog-initial.png" />
+    <Content Include="Content\docs\edit-dialog.png" />
+    <Content Include="Content\docs\exit-prompt.png" />
+    <Content Include="Content\docs\item-sort.png" />
+    <Content Include="Content\docs\list-delete.png" />
+    <Content Include="Content\docs\openid-selector.png" />
+    <Content Include="Content\docs\prototype-ui.png" />
+    <Content Include="Content\docs\type-json.png" />
+    <Content Include="Content\docs\bind-to-model.htm" />
+    <Content Include="Content\docs\adding-items.htm" />
+    <Content Include="Content\docs\adding-and-deleting-lists.htm" />
+    <Content Include="Content\docs\app_data.png" />
+    <Content Include="Content\docs\calculated-properties.htm" />
+    <Content Include="Content\docs\editing-items.htm" />
+    <Content Include="Content\docs\data-annotations.htm" />
+    <Content Include="Content\docs\custom-validation.htm" />
+    <Content Include="Content\docs\enabling-autosave.htm" />
+    <Content Include="Content\docs\deleting-items.htm" />
+    <Content Include="Content\docs\introduction.htm" />
+    <Content Include="Content\docs\sorting-items.htm" />
+    <Content Include="Content\docs\prototype-main-page.htm" />
+    <Content Include="Content\docs\create-login-page.htm" />
+    <Content Include="Content\docs\project-setup.htm" />
+    <Content Include="Content\docs\create-model.htm" />
+    <Content Include="Content\docs\vc3os-sm.png" />
+    <Content Include="Content\docs\walkthrough.htm" />
     <Content Include="Content\high-priority.png" />
     <Content Include="Content\jquery-ui\images\ui-bg_flat_0_333333_40x100.png" />
     <Content Include="Content\jquery-ui\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -177,7 +213,10 @@
     <Content Include="Scripts\jquery-1.7.2.min.js" />
     <Content Include="Scripts\jquery-ui-1.8.19.js" />
     <Content Include="Scripts\jquery-ui-1.8.19.min.js" />
+    <Content Include="Scripts\jquery.ba-hashchange.min.js" />
+    <Content Include="Scripts\jquery.zclip.js" />
     <Content Include="Scripts\jquery.corner.js" />
+    <Content Include="Scripts\json2.js" />
     <Content Include="Scripts\MicrosoftAjax.debug.js" />
     <Content Include="Scripts\MicrosoftAjaxTemplates.debug.js" />
     <Content Include="Scripts\modernizr-1.7.min.js" />
@@ -271,8 +310,16 @@
     <Content Include="Scripts\openid-selector\images\openid-providers-ru.png" />
     <Content Include="Scripts\openid-selector\js\openid-en.js" />
     <Content Include="Scripts\openid-selector\js\openid-jquery.js" />
+    <Content Include="Scripts\ZeroClipboard.swf" />
     <Content Include="Web.config" />
     <Content Include="Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\docs\content.zip" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -288,6 +335,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Home\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\docs\openid-selector.zip" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Walkthrough\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\docs\scripts.zip" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -311,7 +367,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>54368</DevelopmentServerPort>
+          <DevelopmentServerPort>54367</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>

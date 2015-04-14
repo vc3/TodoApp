@@ -7,7 +7,7 @@
 		$(".board-list").css("width", listWidth + "px");
 	}
 
-	var boardPadding = 40;
+	var boardPadding = 82;
 	var listPadding = 25;
 
 	function adjustBoardHeight() {

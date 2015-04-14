@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2008/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>demo_listitem</Title>
+			<Shortcut>demo_listitem</Shortcut>
+			<Description></Description>
+			<Author>VC3</Author>
+			<Imports>
+				<Namespace>System.ComponentModel.DataAnnotations</Namespace>
+				<Namespace>ExoModel</Namespace>
+				<Namespace>ExoRule</Namespace>
+				<Namespace>ExoRule.DataAnnotations</Namespace>
+			</Imports>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+							<Code Language="csharp"><![CDATA[
+	public class ListItem
+	{
+		public int Id { get; set; }
+
+		[Required]
+		public virtual List List { get; set; }
+
+		[DisplayFormat(DataFormatString = "d")]
+		public DateTime? DueDate { get; set; }
+
+		[Required]
+		public string Text { get; set; }
+
+		[AllowedValues("Priority.All")]
+		public Priority Priority { get; set; }
+
+		[Required]
+		public int Sequence { get; set; }
+
+		[Required]
+		[DisplayFormat(DataFormatString = "d")]
+		public DateTime? DateCreated { get; set; }
+	}
+]]>
+							</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

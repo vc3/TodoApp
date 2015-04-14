@@ -1,3 +1,10 @@
+// Raise ok event on enter keypress
+$(document.documentElement).on("keypress", ".board-list-edititem-dialog .dialog-content", function(e) {
+	if (e.keyCode === jQuery.ui.keyCode.ENTER) {
+		Sys.UI.DomElement.raiseBubbleEvent(this, new Sys.CommandEventArgs("ok", null, this));
+	}
+});
+
 $(document.documentElement).on("click", ".board-list-item", function() {
 	// Disable save on the item being edited
 	var item = $parentContextData(this, null, null, ListItem);

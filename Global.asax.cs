@@ -19,9 +19,17 @@ namespace TodoApp
 
 	public class MvcApplication : System.Web.HttpApplication
 	{
+		public static void RegisterGlobalFilters(GlobalFilterCollection filters)
+		{
+			filters.Add(new HandleErrorAttribute());
+		}
+
 		public static void RegisterRoutes(RouteCollection routes)
 		{
-			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+			routes.IgnoreRoute("{*allHandlers}", new { allHandlers = @".*\.axd(/.*)?" });
+			routes.IgnoreRoute("{*allsvc}", new { allsvc = @".*\.svc(/.*)?" });
+
+			routes.MapRoute("Walkthrough", "walkthrough/{step}", new { controller = "Walkthrough", action = "Index", step = UrlParameter.Optional });
 
 			routes.MapRoute(
 				"Default", // Route name
@@ -34,6 +42,7 @@ namespace TodoApp
 		{
 			AreaRegistration.RegisterAllAreas();
 
+			RegisterGlobalFilters(GlobalFilters.Filters);
 			RegisterRoutes(RouteTable.Routes);
 
 			Database.SetInitializer<TodoContext>(new DropCreateDatabaseIfModelChanges<TodoContext>());

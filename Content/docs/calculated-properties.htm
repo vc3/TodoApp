@@ -1,0 +1,272 @@
+﻿<style type="text/css">
+	body 
+	{
+		font-family: Corbel, Tahoma, Verdana;
+	}
+	.MsoNormal
+	{
+		margin: 1px;
+	}
+	.code
+	{
+		font-family: Consolas, Courier New, Sans-Serif;
+	}
+</style>
+<body>
+	<p style="font-size: x-large;">
+		<strong>Calculated Properties</strong></p>
+	<p>
+		Exo supports defining rules that automatically calculate property values for model
+		entities on the server, on the client, or via projection on both the client and
+		server.&nbsp; The following example demonstrates how a server model property can
+		be calculated via a rule written in C# and how this rule is automatically projected
+		to the client as a Javascript rule.</p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas; color: gray">///</span><span
+			style="font-size: 9.5pt; font-family: Consolas; color: green"> </span><span style="font-size: 9.5pt;
+				font-family: Consolas; color: gray">&lt;summary&gt;</span><span style="font-size: 9.5pt;
+					font-family: Consolas"><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas; color: gray">///</span><span
+			style="font-size: 9.5pt; font-family: Consolas; color: green"> A friendly description
+			of the relative age of the item.</span><span style="font-size: 9.5pt; font-family: Consolas"><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas; color: gray">///</span><span
+			style="font-size: 9.5pt; font-family: Consolas; color: green"> </span><span style="font-size: 9.5pt;
+				font-family: Consolas; color: gray">&lt;/summary&gt;</span><span style="font-size: 9.5pt;
+					font-family: Consolas"><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas">[<span style="color: #2B91AF">NotMapped</span>]<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas; color: blue">public</span><span
+			style="font-size: 9.5pt; font-family: Consolas"> <span style="color: blue">string</span>
+			AgeDescription { <span style="color: blue">get</span>; <span style="color: blue">private</span>
+			<span style="color: blue">set</span>; }<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas; color: gray">
+			<o:p>&nbsp;</o:p>
+		</span>
+	</p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas; color: gray">///</span><span
+			style="font-size: 9.5pt; font-family: Consolas; color: green"> </span><span style="font-size: 9.5pt;
+				font-family: Consolas; color: gray">&lt;summary&gt;</span><span style="font-size: 9.5pt;
+					font-family: Consolas"><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas; color: gray">///</span><span
+			style="font-size: 9.5pt; font-family: Consolas; color: green"> Calculates the description
+			of the age of the item.</span><span style="font-size: 9.5pt; font-family: Consolas"><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas; color: gray">///</span><span
+			style="font-size: 9.5pt; font-family: Consolas; color: green"> </span><span style="font-size: 9.5pt;
+				font-family: Consolas; color: gray">&lt;/summary&gt;</span><span style="font-size: 9.5pt;
+					font-family: Consolas"><o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas; color: blue">static</span><span
+			style="font-size: 9.5pt; font-family: Consolas"> <span style="color: #2B91AF">Rule</span>
+			CalculateAgeDescription = <span style="color: #2B91AF">Rule</span>&lt;<span style="color: #2B91AF">ListItem</span>&gt;.Calculate(<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas"><span style="mso-tab-count: 1">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>item =&gt; item.AgeDescription,<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas"><span style="mso-tab-count: 1">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>item =&gt; <span style="color: #A31515">
+				&quot;created &quot;</span> + (<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas"><span style="mso-tab-count: 2">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+			item.Age.Ticks &lt; 0 ? <span style="color: #A31515">&quot;in the future&quot;</span>
+			:<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas"><span style="mso-tab-count: 2">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+			item.Age.TotalMinutes &lt; 1 ? <span style="color: #A31515">&quot;just now&quot;</span>
+			:<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas"><span style="mso-tab-count: 2">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+			item.Age.TotalMinutes &lt; 2 ? <span style="color: #A31515">&quot;1 minute ago&quot;</span>
+			:<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas"><span style="mso-tab-count: 2">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+			item.Age.TotalHours &lt; 1 ? item.Age.Minutes + <span style="color: #A31515">&quot;
+				minutes ago&quot;</span> :<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas"><span style="mso-tab-count: 2">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+			item.Age.TotalHours &lt; 2 ? <span style="color: #A31515">&quot;1 hour ago&quot;</span>
+			:<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas"><span style="mso-tab-count: 2">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+			item.Age.TotalDays &lt; 1 ? item.Age.Hours + <span style="color: #A31515">&quot; hours
+				ago&quot;</span> :<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas"><span style="font-size: 9.5pt;
+			font-family: Consolas"><span style="mso-tab-count: 2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</span></span>item.Age.TotalDays &lt; 2 ? <span style="color: #A31515">&quot;yesterday&quot;</span>
+			:<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas"><span style="mso-tab-count: 2">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+			item.Age.TotalDays &lt; 7 ? item.Age.Days + <span style="color: #A31515">&quot; days
+				ago&quot;</span> :<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas"><span style="mso-tab-count: 1">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+			item.Age.TotalDays &lt; 14 ? <span style="color: #A31515">&quot;last week&quot;</span>
+			:<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas"><span style="mso-tab-count: 1">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+			item.Age.TotalDays &lt; 35 ? <span style="color: #2B91AF">Math</span>.Round(item.Age.Days
+			/ 7.0) + <span style="color: #A31515">&quot; weeks ago&quot;</span> :<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size: 9.5pt; font-family: Consolas"><span style="mso-tab-count: 2">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+			<span style="color: #A31515">&quot;a long time ago&quot;</span>));</span><br />
+	</p>
+	<p>
+		The <span class="code"><strong>CalculateAgeDescription</strong></span> rule automatically
+		calculates the value of the <span class="code"><strong>AgeDescription</strong></span>
+		property when it is first accessed or whenever one of its dependencies change.&nbsp;
+		In this case, the rule is dependent on the <span class="code"><strong>Age</strong></span>
+		property.&nbsp; The <span class="code"><strong>Rule&lt;T&gt;.Calculate</strong></span>
+		method takes two parameters--the first specifies which property is being calculated
+		and the second specifies the calculation to use for the property.&nbsp; Both parameters
+		must be expression trees, so the lambdas must be expressions, not statement blocks.&nbsp;&nbsp;
+		This allows Exo to support automatic determination of dependencies to control when
+		the rule runs, as well as automatic conversion of .NET-based rules into Javascript.</p>
+	<img src="type-json.png" />
+	<p>
+		This FireBug view of the JSON type data sent to the client by Exo shows the implementation
+		of this server rule after translation to the corresponding Javascript implementation.&nbsp;
+		The client-side <span class="code"><strong>ListItem</strong></span> type will have
+		a corresponding <span class="code"><strong>CalculatedPropertyRule</strong></span>
+		defined using this information, triggered on access or change of the <span class="code">
+			<strong>Age</strong></span> property, to symmetrically calculate the property
+		value.&nbsp; Since the <span class="code"><strong>Age</strong></span> property is
+		also automatically calculated based on the <span class="code"><strong>User.CurrentTime</strong></span>
+		property, which is periodically updated by the UI, the declaratively linked UI automatically
+		refreshes the displayed age of each item as they get older.</p>
+	<p>
+		This example shows the ideal case of a rule defined on the server that automatically
+		exists on the client.&nbsp; However, there are a wide variety of alternative scenarios
+		that are also supported, including:</p>
+	<ul>
+		<li>Server rule only, triggered when changes are round-tripped to the server.&nbsp;
+			If the rule does not exist on the client, it does not mean it does not work, it
+			just does not fire immediately, but when changes are round-tripped, the rule will
+			fire, and if the rule changes the property value, it will roundtrip these changes
+			back to the client.&nbsp; This is an especially useful approach for complex rules
+			involving a lot of data, that require calling services that cannot be securely contacted
+			directly by the client browser environment, or that need to check temporal information,
+			such as changes made by other users.<br />
+		</li>
+		<li>Client rule only, triggered based on changes on the client that do not need to directly
+			be reflected by the server model.&nbsp; Client-only rules are essential when creating
+			new view properties, which extend the model types on the server to create view-specific
+			UI properties to drive the user experience.&nbsp; UI properties are frequently calculated
+			by rules to transform client model data to make it suitable for display in the user
+			interface.<br />
+		</li>
+		<li>Server and client, with dual manual implementations.&nbsp; In some cases, it is
+			important for rules to exist on both the client and the server but not possible
+			for the server implementation to be automatically translated to Javascript.&nbsp;
+			In these cases, rules defined on the server can be implemented in parallel on the
+			client, and type meta-data sent to the client will ensure the corresponding rule
+			implementations are used.&nbsp; The most common rules in Exo fall into this category,
+			such as <span class="code"><strong>RequiredRule</strong></span> or <span class="code">
+				<strong>AllowedValuesRule</strong></span>.</li>
+	</ul>
+	<hr />
+	<ol>
+		<!-- ListItem Calculated Properties -->
+		<li>Insert the following code snippet into <strong>ListItem.cs</strong>:
+			<div class="snippet">
+				<pre>
+		// The age of the item relative to the curent time of the user.
+		[NotMapped]
+		public TimeSpan Age { get; private set; }
+
+		// Calculates the age of the item relative to the current time.
+		static Rule CalculateAge = Rule&lt;ListItem&gt;.Calculate(
+			item => item.Age,
+			item => item.DateCreated == null ? TimeSpan.Zero : item.List.User.CurrentTime.Subtract(item.DateCreated.Value));
+
+		// A friendly description of the relative age of the item.
+		[NotMapped]
+		public string AgeDescription { get; private set; }
+
+		// Calculates the description of the age of the item.
+		static Rule CalculateAgeDescription = Rule&lt;ListItem&gt;.Calculate(
+			item => item.AgeDescription,
+			item => "created " + (
+				item.Age.Ticks < 0 ? "in the future" :
+				item.Age.TotalMinutes < 1 ? "just now" :
+				item.Age.TotalMinutes < 2 ? "1 minute ago" :
+				item.Age.TotalHours < 1 ? item.Age.Minutes + " minutes ago" :
+				item.Age.TotalHours < 2 ? "1 hour ago" :
+				item.Age.TotalDays < 1 ? item.Age.Hours + " hours ago" :
+				item.Age.TotalDays < 2 ? "yesterday" :
+				item.Age.TotalDays < 7 ? item.Age.Days + " days ago" :
+				item.Age.TotalDays < 14 ? "last week" :
+				item.Age.TotalDays < 35 ? Math.Round(item.Age.Days / 7.0) + " weeks ago" :
+				"a long time ago"));
+</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+		<!-- User Calculated Properties -->
+		<li>Insert the following code snippet into <strong>User.cs</strong>:
+			<div class="snippet">
+				<pre>
+		// Represents the current time for the user, which is used to determine the relative age of list items for the user.
+		[NotMapped]
+		public DateTime CurrentTime { get; private set; }
+
+		// Sets the current time of the user to the current system date and time.
+		static Rule CalculateCurrentTime = Rule&lt;User&gt;.Calculate(
+			user => user.CurrentTime,
+			item => DateTime.Now);		
+</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+		<!-- User.CurrentTime UI Script -->
+		<li>Insert the following code snippet into <strong>Home/Index.cshtml</strong> after the script references:
+			<div class="snippet">
+				<pre>
+@*
+Miscellaneous scripts
+*@
+
+&lt;script type="text/javascript"&gt;
+	$exoweb({
+		contextReady: function (context) {
+			// Automatically update User.CurrentTime 
+			window.setInterval(function () { context.model.user.set_CurrentTime(new Date(Date.now())); }, 20000);
+		}
+	});
+&lt;/script&gt;
+</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+		<!-- Index UI Script -->
+		<li>Replace the static age description <strong>&quot;Item Age Description (eg, one minute ago)&quot;</strong> with a binding expression 
+			<span class="code">{# AgeDescription}</span> in <strong>Home/Index.cshtml</strong>:<br />
+			<br />
+			<p class="MsoNormal">
+				<span style="font-size:
+9.5pt;font-family:Consolas;color:blue">&lt;</span><span style="font-size:9.5pt;
+font-family:Consolas;color:maroon">div</span><span style="font-size:9.5pt;
+font-family:Consolas"> <span style="color:red">class</span><span style="color:blue">=&quot;board-list-item-age-description&quot;&gt;</span><span 
+					style="background: yellow; mso-highlight: yellow">{# AgeDescription}</span><span 
+					style="color:blue">&lt;/</span><span style="color:maroon">div</span><span 
+					style="color:blue">&gt;</span></span><br />
+			</p>
+		</li>
+	</ol>
+</body>

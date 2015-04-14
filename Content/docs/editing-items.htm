@@ -1,0 +1,300 @@
+﻿<style type="text/css">
+	body 
+	{
+		font-family: Corbel, Tahoma, Verdana;
+	}
+	.MsoNormal
+	{
+		margin: 1px;
+	}
+	.code
+	{
+		font-family: Consolas, Courier New, Sans-Serif;
+	}
+	.code-inline
+	{
+		border:1px solid #d0d0d0;
+		padding:1px 2px;
+		background:#e0e0e0;
+	}
+	.code-block
+	{
+		margin:25px;
+	}
+	.style1
+	{
+		width: 421px;
+		height: 305px;
+	}
+</style>
+<body>
+	<p style="font-size: x-large;">
+		<strong>Editing Items</strong>
+	</p>
+	<p>
+		ExoWeb makes edit forms for your model classes really easy.
+		</p>
+	<p>
+		<img alt="" class="style1" src="edit-dialog-initial.png" /></p>
+	<p>
+		Here again we&#39;re using a jQuery UI dialog to show the edit form.&nbsp; 
+		The dialog is shown when the user clicks on a card.</p>
+	<p>
+		Building 
+		the edit form itself is as simple as listing the fields to edit.&nbsp; ExoWeb 
+		can handle what controls to display based on property type and other metadata.</p>
+	<div class="code-block">
+	<pre><span style="font-family:
+Consolas;color:blue">&lt;</span><span style="font-family:Consolas;color:maroon">div</span><span 
+		style="font-family:Consolas;color:black">&nbsp;</span><span style="font-family:
+Consolas;color:red">class</span><span style="font-family:Consolas;color:blue">=&quot;sys-template&nbsp;board-list-edititem-dialog&quot;</span><span 
+		style="font-family:Consolas;color:black">&nbsp;</span><span style="font-family:
+Consolas;color:red">sys</span><span style="font-family:Consolas;color:blue">:</span><span 
+		style="font-family:Consolas;color:red">attach</span><span style="font-family:
+Consolas;color:blue">=&quot;dataview&quot;</span><span style="font-family:Consolas;
+color:black">&nbsp;</span><span style="font-family:Consolas;color:red">width</span><span 
+		style="font-family:Consolas;color:blue">=&quot;400&quot;&gt;</span><span 
+		style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span></span><span style="font-family:Consolas;
+color:blue">&lt;</span><span style="font-family:Consolas;color:maroon">div</span><span 
+		style="font-family:Consolas;color:black">&nbsp;</span><span style="font-family:
+Consolas;color:red">class</span><span style="font-family:Consolas;color:blue">=&quot;dialog-content&quot;&gt;</span><span 
+		style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span></span><span style="font-family:
+Consolas;color:blue">&lt;</span><span style="font-family:Consolas;color:maroon">div</span><span 
+		style="font-family:Consolas;color:black">&nbsp;</span><span style="font-family:
+Consolas;color:red">sys</span><span style="font-family:Consolas;color:blue">:</span><span 
+		style="font-family:Consolas;color:red">attach</span><span style="font-family:
+Consolas;color:blue">=&quot;content&quot;</span><span style="font-family:Consolas;
+color:black">&nbsp;</span><span style="font-family:Consolas;color:red">content</span><span 
+		style="font-family:Consolas;color:blue">:</span><span style="font-family:Consolas;
+color:red">template</span><span style="font-family:Consolas;color:blue">=&quot;form&quot;</span><span 
+		style="font-family:Consolas;color:black">&nbsp;</span><span style="font-family:
+Consolas;color:red">content</span><span style="font-family:Consolas;color:blue">:</span><span 
+		style="font-family:Consolas;color:red">data</span><span style="font-family:
+Consolas;color:blue">=&quot;{@@&nbsp;Description&nbsp;}&quot;&gt;&lt;/</span><span 
+		style="font-family:Consolas;color:maroon">div</span><span style="font-family:
+Consolas;color:blue">&gt;</span><span style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span></span><span style="font-family:
+Consolas;color:blue">&lt;</span><span style="font-family:Consolas;color:maroon">div</span><span 
+		style="font-family:Consolas;color:black">&nbsp;</span><span style="font-family:
+Consolas;color:red">sys</span><span style="font-family:Consolas;color:blue">:</span><span 
+		style="font-family:Consolas;color:red">attach</span><span style="font-family:
+Consolas;color:blue">=&quot;content&quot;</span><span style="font-family:Consolas;
+color:black">&nbsp;</span><span style="font-family:Consolas;color:red">content</span><span 
+		style="font-family:Consolas;color:blue">:</span><span style="font-family:Consolas;
+color:red">template</span><span style="font-family:Consolas;color:blue">=&quot;form&quot;</span><span 
+		style="font-family:Consolas;color:black">&nbsp;</span><span style="font-family:
+Consolas;color:red">content</span><span style="font-family:Consolas;color:blue">:</span><span 
+		style="font-family:Consolas;color:red">data</span><span style="font-family:
+Consolas;color:blue">=&quot;{@@&nbsp;DueDate&nbsp;}&quot;&gt;&lt;/</span><span 
+		style="font-family:Consolas;color:maroon">div</span><span style="font-family:
+Consolas;color:blue">&gt;</span><span style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span></span><span style="font-family:
+Consolas;color:blue">&lt;</span><span style="font-family:Consolas;color:maroon">div</span><span 
+		style="font-family:Consolas;color:black">&nbsp;</span><span style="font-family:
+Consolas;color:red">sys</span><span style="font-family:Consolas;color:blue">:</span><span 
+		style="font-family:Consolas;color:red">attach</span><span style="font-family:
+Consolas;color:blue">=&quot;content&quot;</span><span style="font-family:Consolas;
+color:black">&nbsp;</span><span style="font-family:Consolas;color:red">content</span><span 
+		style="font-family:Consolas;color:blue">:</span><span style="font-family:Consolas;
+color:red">template</span><span style="font-family:Consolas;color:blue">=&quot;form&quot;</span><span 
+		style="font-family:Consolas;color:black">&nbsp;</span><span style="font-family:
+Consolas;color:red">content</span><span style="font-family:Consolas;color:blue">:</span><span 
+		style="font-family:Consolas;color:red">data</span><span style="font-family:
+Consolas;color:blue">=&quot;{@@&nbsp;Priority&nbsp;}&quot;&gt;&lt;/</span><span 
+		style="font-family:Consolas;color:maroon">div</span><span style="font-family:
+Consolas;color:blue">&gt;</span><span style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span></span><span style="font-family:Consolas;
+color:blue">&lt;/</span><span style="font-family:Consolas;color:maroon">div</span><span 
+		style="font-family:Consolas;color:blue">&gt;</span><span style="font-family:
+Consolas;color:black"><o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span></span><span 
+		style="font-family:Consolas;color:blue">&lt;</span><span style="font-family:
+Consolas;color:maroon">div</span><span style="font-family:Consolas;color:black">&nbsp;</span><span 
+		style="font-family:Consolas;color:red">class</span><span style="font-family:
+Consolas;color:blue">=&quot;dialog-footer&quot;&gt;</span><span 
+		style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span></span><span style="font-family:
+Consolas;color:blue">&lt;</span><span style="font-family:Consolas;color:maroon">input</span><span 
+		style="font-family:Consolas;color:black">&nbsp;</span><span style="font-family:
+Consolas;color:red">type</span><span style="font-family:Consolas;color:blue">=&quot;button&quot;</span><span 
+		style="font-family:Consolas;color:black">&nbsp;</span><span style="font-family:
+Consolas;color:red">sys</span><span style="font-family:Consolas;color:blue">:</span><span 
+		style="font-family:Consolas;color:red">command</span><span style="font-family:
+Consolas;color:blue">=&quot;ok&quot;</span><span style="font-family:Consolas;
+color:black">&nbsp;</span><span style="font-family:Consolas;color:red">onclick</span><span 
+		style="font-family:Consolas;color:blue">=&quot;return&nbsp;false;&quot;</span><span 
+		style="font-family:Consolas;color:black">&nbsp;</span><span style="font-family:
+Consolas;color:red">value</span><span style="font-family:Consolas;color:blue">=&quot;Ok&quot;</span><span 
+		style="font-family:Consolas;color:black">&nbsp;</span><span style="font-family:
+Consolas;color:blue">/&gt;</span><span style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span></span><span style="font-family:
+Consolas;color:blue">&lt;</span><span style="font-family:Consolas;color:maroon">input</span><span 
+		style="font-family:Consolas;color:black">&nbsp;</span><span style="font-family:
+Consolas;color:red">type</span><span style="font-family:Consolas;color:blue">=&quot;button&quot;</span><span 
+		style="font-family:Consolas;color:black">&nbsp;</span><span style="font-family:
+Consolas;color:red">sys</span><span style="font-family:Consolas;color:blue">:</span><span 
+		style="font-family:Consolas;color:red">command</span><span style="font-family:
+Consolas;color:blue">=&quot;cancel&quot;</span><span style="font-family:Consolas;
+color:black">&nbsp;</span><span style="font-family:Consolas;color:red">onclick</span><span 
+		style="font-family:Consolas;color:blue">=&quot;return&nbsp;false;&quot;</span><span 
+		style="font-family:Consolas;color:black">&nbsp;</span><span style="font-family:
+Consolas;color:red">value</span><span style="font-family:Consolas;color:blue">=&quot;Cancel&quot;</span><span 
+		style="font-family:Consolas;color:black">&nbsp;</span><span style="font-family:
+Consolas;color:blue">/&gt;</span><span style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span></span><span style="font-family:Consolas;
+color:blue">&lt;/</span><span style="font-family:Consolas;color:maroon">div</span><span 
+		style="font-family:Consolas;color:blue">&gt;</span><span style="font-family:
+Consolas;color:black"><o:p></o:p></span></pre>
+	<span style="font-size:11.0pt;
+line-height:115%;font-family:Consolas;mso-fareast-font-family:Calibri;
+mso-fareast-theme-font:minor-latin;color:blue;mso-ansi-language:EN-US;
+mso-fareast-language:EN-US;mso-bidi-language:AR-SA">&lt;/</span><span style="font-size:11.0pt;line-height:115%;font-family:Consolas;mso-fareast-font-family:
+Calibri;mso-fareast-theme-font:minor-latin;color:maroon;mso-ansi-language:EN-US;
+mso-fareast-language:EN-US;mso-bidi-language:AR-SA">div</span><span style="font-size:11.0pt;line-height:115%;font-family:Consolas;mso-fareast-font-family:
+Calibri;mso-fareast-theme-font:minor-latin;color:blue;mso-ansi-language:EN-US;
+mso-fareast-language:EN-US;mso-bidi-language:AR-SA">&gt;</span>
+	</div>
+	<p>
+		You may notice that the edit dialog doesn't 
+		exactly match what you see above.&nbsp; Specifically, there are no options for 
+		priority.&nbsp; We&#39;ll talk more in-depth about the magic that makes this 
+		work when we cover data annotations.</p>
+	<hr />
+	<ol>
+		<li>Insert the following code snippet into <strong>Views\Shared\_Layout.cshtml</strong>, below the <i>Script references</i> section:
+			<div class="snippet">
+				<pre>
+&lt;script type="text/javascript"&gt;
+	$exoweb({
+		init: function () {
+			ExoWeb.UI.Template.load('@Url.Content("~/scripts/exoweb-templates.htm")');
+		}
+	});
+
+	$(function () {
+		function createDatePicker() {
+			$(this).datepicker({
+				minDate: new Date('1/1/0001'),
+				maxDate: new Date('12/31/9999'),
+				yearRange: '-110:+50',
+				duration: 0,
+				dateFormat: 'm/d/yy',
+				showOn: 'button',
+				changeYear: true,
+				changeMonth: true,
+				onSelect: function (val, control) {
+					// jquery trigger doesn't seem to raise the event
+					// properly, so raise it here
+					var el = $(this).get(0);
+					if (el.dispatchEvent) {
+						var evt = document.createEvent("MutationEvents");
+						evt.initEvent("change", false, true);
+						el.dispatchEvent(evt);
+					}
+					else if (el.fireEvent) { el.fireEvent("onchange"); }
+				}
+			});
+		}
+
+		$("input.datepicker:bound").ever(createDatePicker);
+	});
+&lt;/script&gt;
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<li>Create the javascript file <strong>board-list-edititem.js</strong> under <strong>scripts</strong></li>
+
+		<li>Insert the following snippet into <strong>scripts/board-list-edititem.js</strong>:
+			<div class="snippet">
+				<pre>
+$(document.documentElement).on("click", ".board-list-item", function() {
+	// Disable save on the item being edited
+	var item = $parentContextData(this, null, null, ListItem);
+	context.server.disableSave(item);
+
+	var checkpoint = context.server._changeLog.checkpoint();
+
+	var $dialog = $(".board-list-edititem-dialog");
+
+	$dialog.dialog({
+		autoOpen: false,
+		modal: true,
+		title: "Edit Item",
+		width: $dialog.attr("width") ? parseInt($dialog.attr("width")) : undefined,
+		height: $dialog.attr("height") ? parseInt($dialog.attr("height")) : undefined,
+		closeOnEscape: false,
+		open: function(event, ui) {
+			// Disable close button
+			$(this).closest(".ui-dialog").find(".ui-dialog-titlebar-close").hide();
+		}
+	});
+
+	// Set up commands to respond to button clicks
+	$dialog.dialogCommands({
+		ok: function() {
+			context.server.enableSave(item);
+		},
+		cancel: function() {
+			context.server.rollback(checkpoint, function() {
+				context.server.enableSave(item);
+			});
+		}
+	});
+
+	// Apply data to the dataview
+	$dialog.control("data", item);
+
+	// Open the dialog
+	$dialog.dialog("open");
+});
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<li>Append the following code snippet in <strong>Views\Home\Index.cshtml</strong> under the list of script references:
+			<div class="snippet">
+				<pre>
+&lt;script src="@Url.Content("~/scripts/board-list-edititem.js")"&gt;&lt;/script&gt;
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<li>Append the following code snippet at the end of <strong>Views\Home\Index.cshtml</strong> after the main board markup:
+			<div class="snippet">
+				<pre>
+@*
+Dialog for editing a list item
+*@
+
+&lt;div class=&quot;sys-template board-list-edititem-dialog&quot; sys:attach=&quot;dataview&quot; width=&quot;400&quot;&gt;
+	&lt;div class=&quot;dialog-content&quot;&gt;
+		&lt;div sys:attach=&quot;content&quot; content:template=&quot;form&quot; content:data=&quot;{@@ Description }&quot;&gt;&lt;/div&gt;
+		&lt;div sys:attach=&quot;content&quot; content:template=&quot;form&quot; content:data=&quot;{@@ DueDate }&quot;&gt;&lt;/div&gt;
+		&lt;div sys:attach=&quot;content&quot; content:template=&quot;form&quot; content:data=&quot;{@@ Priority }&quot;&gt;&lt;/div&gt;
+	&lt;/div&gt;
+	&lt;div class=&quot;dialog-footer&quot;&gt;
+		&lt;input type=&quot;button&quot; sys:command=&quot;ok&quot; onclick=&quot;return false;&quot; value=&quot;Ok&quot; /&gt;
+		&lt;input type=&quot;button&quot; sys:command=&quot;cancel&quot; onclick=&quot;return false;&quot; value=&quot;Cancel&quot; /&gt;
+	&lt;/div&gt;
+&lt;/div&gt;
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+	</ol>
+</body>

@@ -1,0 +1,77 @@
+﻿<body>
+	<ol>
+		<li>Insert the following snippet into <strong>Views\Home\Index.cshtml</strong>, in the main board markup, after the <strong>board-addlist</strong> element:
+			<div class="snippet">
+				<pre>
+&lt;span class=&quot;board-status&quot;&gt;
+	&lt;span class=&quot;board-server-working&quot;&gt;Communicating with the server...&lt;/span&gt;
+	&lt;span class=&quot;board-server-success&quot;&gt;Success&lt;/span&gt;
+	&lt;span class=&quot;board-server-failure&quot;&gt;An error occurred!&lt;/span&gt;
+	&lt;a href=&quot;#&quot; onclick=&quot;return false;&quot;&gt;Try again&lt;/a&gt;
+&lt;/span&gt;
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<li>Create the javascript file <strong>board-autosave.js</strong> under <strong>scripts</strong></li>
+
+		<li>Insert the following snippet into <strong>scripts/board-autosave.js</strong>:
+			<div class="snippet">
+				<pre>
+$exoweb({
+	contextReady: function (context) {
+		// Automatically save changes immediately
+		context.server.startAutoSave(context.model.user, 1);
+
+		// Update status when communicating with server
+		context.server.addRequestBegin(function () {
+			$(".board:not(.sys-template) .board-server-working").show();
+		});
+		context.server.addRequestEnd(function () {
+			$(".board:not(.sys-template) .board-server-working").hide();
+		});
+		context.server.addRequestSuccess(function () {
+			$(".board-status-save").hide();
+			$(".board:not(.sys-template) .board-server-failure").hide();
+			$(".board:not(.sys-template) .board-server-success").show().fadeOut(2000);
+		});
+		context.server.addRequestFailed(function () {
+			$(".board-status-save").show();
+			$(".board:not(.sys-template) .board-server-success").hide();
+			$(".board:not(.sys-template) .board-server-failure").show().fadeOut(2000);
+		});
+
+		$(document.documentElement).on("click", ".board-status-save", function () {
+			$(".board-status-save").hide();
+			context.server.save(context.model.user, function () {
+				context.server.startAutoSave(context.model.user, 1);
+			});
+		});
+	}
+});
+
+$(window).bind("beforeunload", function () {
+	// Prompt the user if they will lose unsaved changes by navigating away from the page
+	if (context.server.changes(false, context.model.user, true).length > 0) {
+		return "Are you sure you want to leave the page? You will lose unsaved changes.";
+	}
+});
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<!-- Snippet 1 -->
+		<li>Append the following code snippet in <strong>Views\Home\Index.cshtml</strong> under the list of script references:
+			<div class="snippet">
+				<pre>
+&lt;script src="@Url.Content("~/scripts/board-autosave.js")"&gt;&lt;/script&gt;
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+	</ol>
+
+</body>
+</html>

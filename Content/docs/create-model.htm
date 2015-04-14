@@ -1,0 +1,276 @@
+﻿<style type="text/css">
+	body 
+	{
+		font-family: Corbel, Tahoma, Verdana;
+	}
+	.MsoNormal
+	{
+		margin: 1px;
+	}
+	.code
+	{
+		font-family: Consolas, Courier New, Sans-Serif;
+	}
+	.style1
+	{
+		width: 554px;
+		height: 590px;
+	}
+</style>
+<body>
+	<p style="font-size: x-large;">
+		<strong>Create Model</strong>
+	</p>
+	<p>
+		The application depends on a fairly straight-forward model:</p>
+	<p>
+		<img alt="Class Diagram" class="style1" src="ClassDiagram.png" /></p>
+	<p>
+		ExoModel must be made aware of this model.&nbsp; In order to initalize the framework, the CreateContext event must be handled.&nbsp; In this event, ExoModel requires that a TypeProvider must be created and passed into the Model Context.&nbsp; TypeProviders in ExoModel serve the purpose of acting not only as a metadata provider, but enabling eventing for model instances.</p>
+	<p>
+		In this example, Afterthought is used to modify, or <em>amend,</em> the model classes at build-time to provide hooks for instance creation and property gets/sets.</p>
+	<hr />
+	<ol>
+		<li>Create a folder called <strong>Models</strong> in the root of the TodoApp project:</li>
+
+		<!-- List Class -->
+		<li>Add a class called <strong>List</strong> to the model using the following code snippet:
+			<div class="snippet">
+<pre>
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using ExoRule.DataAnnotations;
+
+namespace TodoApp.Models
+{
+	public class List
+	{
+		public int Id { get; set; }
+
+		[Required]
+		public string Name { get; set; }
+		
+		[Required]
+		public int Sequence { get; set; }
+
+		public virtual User User { get; set; }
+
+		public virtual ICollection&lt;ListItem&gt; Items { get; set; }
+	}
+}
+</pre>	
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<!-- ListItem Class -->
+		<li>Add a class called <strong>ListItem</strong> to the model using the following code snippet:
+			<div class="snippet">
+<pre>
+using System;
+using System.Linq;
+using System.ComponentModel.DataAnnotations;
+using ExoModel;
+using ExoRule;
+using ExoRule.DataAnnotations;
+
+namespace TodoApp.Models
+{
+	public class ListItem
+	{
+		public int Id { get; set; }
+
+		[Required]
+		public string Description { get; set; }
+
+		[Required]
+		public int Sequence { get; set; }	
+			
+		public virtual List List { get; set; }
+
+		[Required]
+		[DisplayFormat(DataFormatString = "d")]
+		public DateTime? DateCreated { get; set; }
+		
+		[DisplayFormat(DataFormatString = "d")]
+		public DateTime? DueDate { get; set; }
+
+		[AllowedValues("Priority.All")]
+		public Priority Priority { get; set; }
+	}
+}
+</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<!-- Priority Class -->
+		<li>Add a class called <strong>Priority</strong> to the model using the following code snippet:
+			<div class="snippet">
+<pre>
+using System.Linq;
+using System.ComponentModel.DataAnnotations;
+
+namespace TodoApp.Models
+{
+	public class Priority
+	{
+		public int Id { get; set; }
+
+		[Required]
+		public string Name { get; set; }
+		
+		[Required]
+		public int Sequence { get; set; }
+
+		public static Priority[] All
+		{
+			get
+			{
+				return TodoContext.Current.Priorities.ToArray();
+			}
+		}
+	}
+}
+</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<!-- User Class -->
+		<li>Add a class called <strong>User</strong> to the model using the following code snippet:
+			<div class="snippet">
+<pre>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.ComponentModel.DataAnnotations;
+using ExoRule;
+
+namespace TodoApp.Models
+{
+	public class User
+	{
+		public int Id { get; set; }
+
+		[Required]
+		public string Name { get; set; }
+		
+		public virtual ICollection&lt;List&gt; Lists { get; set; }		
+	}
+}
+</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<!-- TodoContext Class -->
+		<li>Add a class called <strong>TodoContext</strong> to the model using the following code snippet:
+			<div class="snippet">
+<pre>
+using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
+using ExoModel.EntityFramework;
+using ExoModel;
+using ExoRule;
+using ExoRule.DataAnnotations;
+
+namespace TodoApp.Models
+{
+	public class TodoContext : DbContext
+	{
+		public DbSet&lt;List&gt; Lists { get; set; }
+		public DbSet&lt;User&gt; Users { get; set; }
+		public DbSet&lt;Priority&gt; Priorities { get; set; }
+		public DbSet&lt;ListItem&gt; ListItems { get; set; }
+
+		public static TodoContext Current
+		{
+			get
+			{
+				return (TodoContext) ((EntityFrameworkModelTypeProvider.EntityModelType) ModelContext.Current.GetModelType&lt;List&gt;()).GetObjectContext();
+			}
+		}
+
+		public TodoContext()
+			: base("TodoContext")
+		{
+			Configuration.LazyLoadingEnabled = true;
+		}
+
+		protected override void OnModelCreating(DbModelBuilder modelBuilder)
+		{
+			modelBuilder.Conventions.Remove&lt;PluralizingTableNameConvention&gt;();
+		}
+	}
+}
+</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<!-- Model Context & Data Prefill -->
+		<li>Add the following snippet to the bottom of the <strong>MvcApplication.Application_Start()</strong> method in the <strong>Global.asax.cs</strong> file:
+			<div class="snippet">
+<pre>
+			Database.SetInitializer&lt;TodoContext&gt;(new DropCreateDatabaseAlways&lt;TodoContext&gt;());
+			new ModelContextProvider().CreateContext += (source, args) =&gt;
+			{
+				Assembly coreAssembly = typeof(MvcApplication).Assembly;
+				args.Context = new ModelContext(new EntityFrameworkModelTypeProvider(() =&gt; new TodoContext()));
+
+				ExoRule.Rule.RegisterRules(coreAssembly);
+			};
+
+			if (!TodoContext.Current.Priorities.Any())
+			{
+				var priority = ModelContext.Create&lt;Priority&gt;();
+				priority.Sequence = 1;
+				priority.Name = "High";
+
+				priority = ModelContext.Create&lt;Priority&gt;();
+				priority.Sequence = 2;
+				priority.Name = "Medium";
+
+				priority = ModelContext.Create&lt;Priority&gt;();
+				priority.Sequence = 3;
+				priority.Name = "Low";
+
+				TodoContext.Current.SaveChanges();
+			}
+</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+		<li>Resolve references in the newly added code to include missing using statements.</li>
+		<li>Add the ASP.NET <strong>App_Data</strong> folder to the project to store the local database:<br /><br />
+			<img src="app_data.png" style="height: 223px; width: 615px" />
+		</li>
+		<li>Update the <b>web.config</b> file to add a connection string for the application's database:
+		<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+9.5pt;font-family:Consolas;color:blue'>&lt;</span><span style='font-size:9.5pt;
+font-family:Consolas;color:#A31515'>connectionStrings</span>&gt;</span><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+9.5pt;font-family:Consolas;color:blue'><span style='mso-spacerun:yes'>  
+</span>&lt;</span><span style='font-size:9.5pt;font-family:Consolas;color:#A31515'>add</span><span
+style='font-size:9.5pt;font-family:Consolas;color:blue'> </span><span
+style='font-size:9.5pt;font-family:Consolas;color:red'>name</span><span
+style='font-size:9.5pt;font-family:Consolas;color:blue'>=</span><span
+style='font-size:9.5pt;font-family:Consolas'>&quot;<span style='color:blue'>TodoContext</span>&quot;<span
+style='color:blue'> </span><span style='color:red'>connectionString</span><span
+style='color:blue'>=</span>&quot;<span style='color:blue'>DataSource=|DataDirectory|TodoApp.sdf</span>&quot; </span><span
+style='font-size:9.5pt;font-family:Consolas;color:red'>providerName</span><span
+style='font-size:9.5pt;font-family:Consolas;color:blue'>=</span><span
+style='font-size:9.5pt;font-family:Consolas'>&quot;<span style='color:blue'>System.Data.SqlServerCe.4.0</span>&quot;<span
+style='color:blue'> /&gt;</span><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
+normal;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+9.5pt;font-family:Consolas;color:blue'>&lt;/</span><span style='font-size:9.5pt;
+font-family:Consolas;color:#A31515'>connectionStrings</span><span
+style='font-size:9.5pt;font-family:Consolas;color:blue'>&gt;<o:p></o:p></span></p></li>
+	</ol>
+</body>

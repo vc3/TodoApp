@@ -1,0 +1,165 @@
+﻿<style type="text/css">
+	body 
+	{
+		font-family: Corbel, Tahoma, Verdana;
+	}
+	.MsoNormal
+	{
+		margin: 1px;
+	}
+	.code
+	{
+		font-family: Consolas, Courier New, Sans-Serif;
+	}
+	.code-inline
+	{
+		border:1px solid #d0d0d0;
+		padding:1px 2px;
+		background:#e0e0e0;
+	}
+	.code-block
+	{
+		margin:25px;
+	}
+	.code-quoted
+	{
+		color:maroon;
+	}
+</style>
+<body>
+	<p style="font-size: x-large;">
+		<strong>Deleting Items</strong>
+	</p>
+	<p>
+		Now let&#39;s move on to deleting items from the board.&nbsp; Using jQuery event 
+		delegation, and ExoWeb change tracking, the code required to do this is 
+		extremely simple.</p>
+	<div class="code-block">
+	<pre><span style="font-family:
+Consolas;color:black">$(document.documentElement).on(</span><span 
+		style="font-family:Consolas;color:maroon">&quot;click&quot;</span><span 
+		style="font-family:Consolas;color:black">,&nbsp;</span><span style="font-family:
+Consolas;color:maroon">&quot;.board-list-deleteitem&quot;</span><span 
+		style="font-family:Consolas;color:black">,&nbsp;</span><span style="font-family:
+Consolas;color:blue">function</span><span style="font-family:Consolas;
+color:black">&nbsp;(e)&nbsp;{<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span style="mso-tab-count:
+1">         </span></span><span style="font-family:Consolas;color:blue">var</span><span 
+		style="font-family:Consolas;color:black">&nbsp;item&nbsp;=&nbsp;$parentContextData(</span><span 
+		style="font-family:Consolas;color:blue">this</span><span style="font-family:
+Consolas;color:black">,&nbsp;</span><span style="font-family:Consolas;
+color:blue">null</span><span style="font-family:Consolas;color:black">,&nbsp;</span><span 
+		style="font-family:Consolas;color:blue">null</span><span style="font-family:
+Consolas;color:black">,&nbsp;ListItem);<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>item.get_List().get_Items().remove(item);<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>e.stopPropagation();<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">});<o:p></o:p></span></pre>
+	</div>
+	<p>
+		Now when you click the delete button, the item is removed and your changes are 
+		saved automatically.</p>
+	<p>
+		It may not be apparent in the UI, but our sequences are out of sync.&nbsp; 
+		Technically we could get by with gaps in the sequence, but we really want the 
+		sequence to accurately reflect the item&#39;s index in the list.&nbsp; Instead of 
+		writing more procedural code to update the sequences, which is merely a 
+		side-effect of the delete, we can write a rule that requences items in the list 
+		due to changes, regardless of what UI behavior might be driving it.&nbsp; (More 
+		on writing rules server-side later.)</p>
+	<p>
+		To accomplish this we&#39;ll sort the items by their sequence, and then simply 
+		update each item in the list to have a sequence equal to it&#39;s index in the list.&nbsp; 
+		We could use the native JavaScript sort function for this, but it manipulates 
+		the array as opposed to creating a copy, which could have unintended 
+		side-effects.&nbsp; Plus, to sort by sequence you have to write the logic to 
+		compare two items&#39; sequences and determine which comes first.&nbsp; ExoWeb comes 
+		with a handy little class that can do that for us.&nbsp; We used it indirectly 
+		in our template when we specified a &quot;transform&quot; option.</p>
+	<div class="code-block">
+	<pre><span style="font-family:
+Consolas;color:blue">new</span><span style="font-family:Consolas;color:black">&nbsp;ExoWeb.Model.Rule(List.meta,&nbsp;{<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>onChangeOf:&nbsp;</span><span 
+		style="font-family:Consolas;color:maroon">&quot;Items&quot;</span><span 
+		style="font-family:Consolas;color:black">,<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>execute:&nbsp;</span><span 
+		style="font-family:Consolas;color:blue">function</span><span style="font-family:
+Consolas;color:black">(list)&nbsp;{<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span>$transform(list.get_Items()).orderBy(</span><span 
+		style="font-family:Consolas;color:maroon">&#39;Sequence&#39;</span><span 
+		style="font-family:Consolas;color:black">).forEach(</span><span 
+		style="font-family:Consolas;color:blue">function</span><span style="font-family:
+Consolas;color:black">(item,&nbsp;index)&nbsp;{<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:3">                          </span>item.set_Sequence(index);<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:2">                 </span>});<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>}<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">});<o:p></o:p></span></pre>
+	</div>
+	<p>
+		Our rule will run automatically when the <span class="code-quoted">"Items"</span> property of the List type 
+		changes.&nbsp; The $transform function wraps the given array and adds on a few 
+		handy functions: filter, orderBy, groupBy,
+		select, and live.&nbsp; The orderBy 
+		function accepts a comparison function, just like the native sort function, or a property 
+		name or list of property names to sort based on (similar to a SQL order by clause).</p>
+	<hr />
+	<ol>
+		<li>Create the javascript file <strong>board-list-deleteitem.js</strong> under <strong>scripts</strong></li>
+
+		<li>Insert the following snippet into <strong>scripts/board-list-deleteitem.js</strong>:
+			<div class="snippet">
+				<pre>
+$(document.documentElement).on("click", ".board-list-deleteitem", function (e) {
+	var item = $parentContextData(this, null, null, ListItem);
+	item.get_List().get_Items().remove(item);
+	e.stopPropagation();
+});
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<!-- Snippet 1 -->
+		<li>Append the following code snippet in <strong>Views\Home\Index.cshtml</strong> under the list of script references:
+			<div class="snippet">
+				<pre>
+&lt;script src="@Url.Content("~/scripts/board-list-deleteitem.js")"&gt;&lt;/script&gt;
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<li>Insert the following snippet into <strong>Views\Home\Index.cshtml</strong>, above the <i>Exo-model declaration</i> section:
+			<div class="snippet">
+				<pre>
+@*
+Re-sequencing
+*@
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+
+	$extend(&quot;List&quot;, function() {
+		new ExoWeb.Model.Rule(List.meta, {
+			onChangeOf: &quot;Items&quot;,
+			execute: function(list) {
+				$transform(list.get_Items()).orderBy(&#39;Sequence&#39;).forEach(function(item, index) {
+					item.set_Sequence(index);
+				});
+			}
+		});
+	});
+
+&lt;/script&gt;
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+	</ol>
+</body>

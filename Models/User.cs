@@ -30,13 +30,26 @@ namespace TodoApp.Models
 			get { return true; }
 		}
 
-		// Represents the current time for the user, which is used to determine the relative age of list items for the user.
+		/// <summary>
+		/// Represents the current time for the user, which is used to determine the relative
+		/// age of list items for the user.
+		/// </summary>
 		[NotMapped]
 		public DateTime CurrentTime { get; private set; }
 
-		// Sets the current time of the user to the current system date and time.
+		/// <summary>
+		/// Sets the current time of the user to the current system date and time.
+		/// </summary>
 		static Rule CalculateCurrentTime = Rule<User>.Calculate(
 			user => user.CurrentTime,
 			item => DateTime.Now);
+
+		public static User[] All
+		{
+			get
+			{
+				return TodoContext.Current.Users.ToArray();
+			}
+		}
 	}
 }

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2008/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>demo_list</Title>
+			<Shortcut>demo_list</Shortcut>
+			<Description></Description>
+			<Author>VC3</Author>
+			<Imports>
+				<Namespace>System.ComponentModel.DataAnnotations</Namespace>
+				<Namespace>ExoModel</Namespace>
+				<Namespace>ExoRule</Namespace>
+				<Namespace>ExoRule.DataAnnotations</Namespace>
+			</Imports>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+							<Code Language="csharp"><![CDATA[
+	public class List
+	{
+		public int Id { get; set; }
+
+		[Required]
+		public int Sequence { get; set; }
+
+		[AllowedValues("User.All")]
+		public virtual User User { get; set; }
+
+		[Required]
+		public string Name { get; set; }
+
+		public virtual ICollection<ListItem> Items { get; set; }
+
+
+	}
+]]>
+							</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

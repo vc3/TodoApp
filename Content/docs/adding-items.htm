@@ -1,0 +1,389 @@
+﻿<style type="text/css">
+	body 
+	{
+		font-family: Corbel, Tahoma, Verdana;
+	}
+	.MsoNormal
+	{
+		margin: 1px;
+	}
+	.code
+	{
+		font-family: Consolas, Courier New, Sans-Serif;
+	}
+	.code-string
+	{
+		color: #822;
+		font-weight: bold;
+	}
+	.code-inline
+	{
+		border:1px solid #d0d0d0;
+		padding:1px 2px;
+		background:#e0e0e0;
+	}
+	.code-block
+	{
+		margin:25px;
+	}
+	.style1
+	{
+		width: 213px;
+		height: 89px;
+	}
+	.style2
+	{
+		width: 209px;
+		height: 103px;
+	}
+</style>
+<body>
+	<p style="font-size: x-large;">
+		<strong>Adding Items</strong>
+	</p>
+	<p>
+		Now that the model is bound to our template, the client will reflect the 
+		current state of the model in real time.&nbsp; Now we can implement add, edit, 
+		and delete functionality. We are going to use <a href="http://jquery.com/">jQuery</a> and 
+		<a href="http://jqueryui.com/">jQuery UI</a> for the user interface behavior.</p>
+	<p>
+		In order to add an item, the user simply clicks the &quot;Add an item...&quot; link.</p>
+	<p>
+		<img alt="" class="style1" src="add-link.png" /></p>
+	<p>
+		When that happens we toggle visibility so that the link is hidden, and a text 
+		input is shown in its place.</p>
+	<p>
+		<img alt="" class="style2" src="add-input.png" /></p>
+	<p>
+		The code to accomplish this is dead simple:</p>
+	<pre><span style="font-family:
+Consolas;color:black">$(document.documentElement).on(</span><span 
+		style="font-family:Consolas;color:maroon">&quot;click&quot;</span><span 
+		style="font-family:Consolas;color:black">,&nbsp;</span><span style="font-family:
+Consolas;color:maroon">&quot;.board-list-additem&nbsp;a&quot;</span><span 
+		style="font-family:Consolas;color:black">,&nbsp;</span><span style="font-family:
+Consolas;color:blue">function</span><span style="font-family:Consolas;
+color:black">()&nbsp;{</span></pre><pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>$(</span><span style="font-family:Consolas;color:blue">this</span><span style="font-family:Consolas;color:black">).hide().prev().show().focus();<o:p></o:p></span></pre><pre><span style="font-family:Consolas;color:black">});<o:p});<o:p></o:p></span></pre>
+	<p>
+		Since DOM events bubble 
+		up from the element that fired the event, jQuery allows you to capture an event 
+		fired by an element or any of its ancestors that match a selector, in this case 
+		<span class="code-string">&quot;.board-list-additem a&quot;</span>, up to and including the current jQuery 
+		object, <span class="code-inline">$(document.documentElement)</span>.&nbsp; We 
+		use <span class="code-inline">document.documentElement</span> in order to watch for the event anywhere on the 
+		page.&nbsp; The end result is that when any element matching 
+		<span class="code-string">&quot;.board-list-additem a&quot;</span> is clicked, 
+		our event handler fires.&nbsp; The rest is standard jQuery methods to toggle 
+		visibility of the two elements and focus into the text field.</p>
+	<p>
+		The other piece of the puzzle is to respond to activity while the field has focus.&nbsp; 
+		Once the user has typed the description of the item, they can add the new item 
+		by either hitting <span class="code-inline">ENTER</span> or <span class="code-inline">TAB</span>.&nbsp;
+		If they hit <span class="code-inline">ENTER</span> they are returned to the previous state.&nbsp;
+		If they hit <span class="code-inline">TAB</span>, the input stays in focus and they can add another item.&nbsp;
+		If they leave the field before doing either then the value is cleared out and the item is not added.</p>
+	<p>
+		<table style="border:1px solid #e0e0e0; width:700px;" cellpadding="2">
+		<tr>
+			<th style="border-bottom: 1px solid #e0e0e0;border-right: 1px solid #e0e0e0;text-align:left;width:300px;">Action</th>
+			<th style="border-bottom: 1px solid #e0e0e0;text-align:left;">Result</th>
+		</tr>
+		<tr>
+			<td style="border-bottom: 1px solid #e0e0e0;border-right: 1px solid #e0e0e0;">User presses the TAB key</td>
+			<td style="border-bottom: 1px solid #e0e0e0;">Create the new item.  Keep focus on the input so that the user can add another item.</td>
+		</tr>
+		<tr>
+			<td style="border-bottom: 1px solid #e0e0e0;border-right: 1px solid #e0e0e0;">User presses the ENTER key</td>
+			<td style="border-bottom: 1px solid #e0e0e0;">Create the new item and hide the input field.</td>
+		</tr>
+		<tr>
+			<td style="border-right: 1px solid #e0e0e0;">User leaves the field (via click, not tab)</td>
+			<td>Discard the text and hide the input field.</td>
+		</tr>
+	</table>
+	</p>
+	<p>
+		Again we will use <a href="http://api.jquery.com/on/">event delegation</a>, subscribing to 3 events; keydown, keypress, 
+		and blur; using the same selector.</p>
+	<pre><span style="font-family:
+Consolas;color:darkgreen">//&nbsp;Create&nbsp;the&nbsp;new&nbsp;item&nbsp;and&nbsp;continue&nbsp;when&nbsp;the&nbsp;user&nbsp;presses&nbsp;the&nbsp;tab&nbsp;key</span><span 
+		style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">.on(</span><span 
+		style="font-family:Consolas;color:maroon">&quot;keydown&quot;</span><span 
+		style="font-family:Consolas;color:black">,&nbsp;</span><span style="font-family:
+Consolas;color:maroon">&quot;.board-list-additem&nbsp;input[type=text]&quot;</span><span 
+		style="font-family:Consolas;color:black">,&nbsp;</span><span style="font-family:
+Consolas;color:blue">function</span><span style="font-family:Consolas;
+color:black">(e)&nbsp;{<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>... <o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">})<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"> <o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:darkgreen">//&nbsp;Create&nbsp;the&nbsp;new&nbsp;item&nbsp;when&nbsp;the&nbsp;user&nbsp;presses&nbsp;the&nbsp;enter&nbsp;key</span><span 
+		style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">.on(</span><span 
+		style="font-family:Consolas;color:maroon">&quot;keypress&quot;</span><span 
+		style="font-family:Consolas;color:black">,&nbsp;</span><span style="font-family:
+Consolas;color:maroon">&quot;.board-list-additem&nbsp;input[type=text]&quot;</span><span 
+		style="font-family:Consolas;color:black">,&nbsp;</span><span style="font-family:
+Consolas;color:blue">function</span><span style="font-family:Consolas;
+color:black">(e)&nbsp;{<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>... <o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">})<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"> <o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:darkgreen">//&nbsp;Hide&nbsp;the&nbsp;add&nbsp;field&nbsp;when&nbsp;the&nbsp;leaves</span><span 
+		style="font-family:Consolas;color:black"><o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">.on(</span><span 
+		style="font-family:Consolas;color:maroon">&quot;blur&quot;</span><span 
+		style="font-family:Consolas;color:black">,&nbsp;</span><span style="font-family:
+Consolas;color:maroon">&quot;.board-list-additem&nbsp;input[type=text]&quot;</span><span 
+		style="font-family:Consolas;color:black">,&nbsp;</span><span style="font-family:
+Consolas;color:blue">function</span><span style="font-family:Consolas;
+color:black">(e)&nbsp;{<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>...<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">})<o:p></o:p></span></pre>
+	<p>
+		The first event, keydown, is used to capture the tab key.&nbsp; We can&#39;t use 
+		keypress here because by the time the keypress event fires the browser has 
+		already moved focus to the next input.&nbsp; The code in the event handler is 
+		fairly simple.&nbsp; It checks that the key pressed was tab, and if so it calls 
+		a function to add the new item, clears out the input value, and finally stops 
+		the browser from performing the default tab behavior.</p>
+	<p>
+		The next event, keypress, is used to capture the enter key.&nbsp; This is nearly 
+		identical to the tab scenario.&nbsp; The only difference is that it also ends 
+		entry mode and returns to the original state by hiding the input and showing the 
+		link.</p>
+	<p>
+		The last event, blur, is simply an inverse of the aformentioned click event 
+		handler.&nbsp; It also hides the input and shows the link.</p>
+	<p>
+		Now let&#39;s move on to the code that actually creates the new item.</p>
+	<div class="code-block">
+	<pre><span style="font-family:
+Consolas;color:blue">var</span><span style="font-family:Consolas;color:black">&nbsp;newItem&nbsp;=&nbsp;</span><span 
+		style="font-family:Consolas;color:blue">new</span><span style="font-family:
+Consolas;color:black">&nbsp;ListItem({<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>List:&nbsp;parentList,<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>Priority:&nbsp;mediumPriority,<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>Sequence:&nbsp;parentList.get_Items().length,<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>Description:&nbsp;textEntered,<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>DateCreated:&nbsp;now<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">});<o:p></o:p></span></pre>
+	</div>
+	<p>
+		This constructor syntax is meant to mimic C# object initializer syntax.&nbsp; It 
+		is essentially equivalent to constructing the object and then calling the setter 
+		for each property in turn, like so:</p>
+	<div class="code-block">
+	<p class="MsoNormal">
+		<span style="font-size:10.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:black">
+		newItem.set_List(parentList);<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:10.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:black">
+		newItem.set_Priority(mediumPriority);<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:10.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:black">
+		newItem.set_Sequence(parentList.get_Items().length);<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:10.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:black">
+		newItem.set_Description(textEntered);<o:p></o:p></span></p>
+	<p class="MsoNormal">
+		<span style="font-size:10.0pt;font-family:Consolas;
+mso-fareast-font-family:&quot;Times New Roman&quot;;color:black">
+		newItem.set_DateCreated(now);<o:p></o:p></span>
+	</p>
+	</div>
+	<p>
+		Multiple properties can also be set after the object has been constructed using 
+		the set function.</p>
+	<div class="code-block">
+	<pre><span style="font-family:
+Consolas;color:black">newItem.set({<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>List:&nbsp;parentList,<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>Priority:&nbsp;mediumPriority,<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>Sequence:&nbsp;parentList.get_Items().length,<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>Description:&nbsp;textEntered,<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black"><span 
+		style="mso-tab-count:1">         </span>DateCreated:&nbsp;now<o:p></o:p></span></pre>
+	<pre><span style="font-family:Consolas;color:black">});<o:p></o:p></span></pre>
+	</div>
+	<p>
+		After the new item has been constructed, the next step is to add it to the list 
+		of items.</p>
+	<div class="code-block">
+
+		<span style="font-size:10.0pt;line-height:115%;
+font-family:Consolas;mso-fareast-font-family:&quot;Times New Roman&quot;;color:black;
+mso-ansi-language:EN-US;mso-fareast-language:EN-US;mso-bidi-language:AR-SA">
+		parentList.get_Items().add(newItem);</span>
+	
+	</div>
+	<p>
+		All list properties in ExoWeb are automatically made &quot;observable&quot;.&nbsp; This 
+		means that they are extended with methods that raise 
+		events according to the nature of the modification.&nbsp; In this case, all we have to do is call the <span class="code-inline">add</span> method 
+		and a collection change event is raised indicating that an item was added to 
+		the array at a particular index.&nbsp; 
+		Note that we can&#39;t call the standard Array <span class="code-inline">push</span> function, since it will not 
+		automatically raise the appropriate events.</p>
+
+	<p>
+		Also, remember that our template binds to the &quot;Items&quot; list, so when it changes the 
+		template will update the DOM accordingly.&nbsp; No need to do anything else.</p>
+	<p>
+		One other point to note is the way that our code determines what list to add the
+		item to.&nbsp; Since we&#39;re adding the item from a jQuery event handler, it is 
+		convenient to go through the DOM to find the list.</p>
+	<div class="code-block">
+	<pre><span style="font-family:
+Consolas;color:blue">var</span><span style="font-family:Consolas;color:black">&nbsp;parentList&nbsp;=&nbsp;$parentContextData(</span><span 
+		style="font-family:Consolas;color:blue">this</span><span style="font-family:
+Consolas;color:black">,&nbsp;</span><span style="font-family:Consolas;
+color:blue">null</span><span style="font-family:Consolas;color:black">,&nbsp;</span><span 
+		style="font-family:Consolas;color:blue">null</span><span style="font-family:
+Consolas;color:black">,&nbsp;List);<o:p></o:p></span></pre>
+	</div>
+	<p>
+		The <span class="code-inline">$parentContextData</span> expects its first argument to a DOM element, and searches 
+		that element and its ancestors for a data context that matches the given 
+		criteria.&nbsp; The second (optional) argument is used to specify 
+		the index of the element within a list.&nbsp; The third (optional) argument can 
+		be used to specify a specific number of &quot;levels&quot; to go up in the heirarchy.&nbsp; 
+		And the fourth (optional) argument, which we are using, is used to specify the 
+		type of data to search for.</p>
+	<p>
+		Another option is to use the id of the object in question by embedding it in an 
+		<span class="code-inline">onclick</span> event handler, for example.&nbsp; This 
+		approach is convenient, especially to generate a URL in your template.&nbsp; 
+		However, it is less reliable and bookmarkable when dealing with newly 
+		constructed objects.</p>
+	<hr />
+	<ol>
+		<li>Create the javascript file <strong>board-list-additem.js</strong> under <strong>scripts</strong></li>
+
+		<li>Insert the following snippet into <strong>scripts/board-list-additem.js</strong>:
+			<div class="snippet">
+				<pre>
+(function() {
+
+	function addNewItem(textEntered) {
+		// Find the parent list
+		var parentList = $parentContextData(this, null, null, List);
+
+		// Get the default priority (medium)
+		var mediumPriority = Priority.meta.get("2");
+
+		// Use the current date and time as the date created
+		var now = new Date();
+
+		// Create the new list item
+		var newItem = new ListItem({
+			List: parentList,
+			Priority: mediumPriority,
+			Sequence: parentList.get_Items().length,
+			Description: textEntered,
+			DateCreated: now
+		});
+
+		// Add the item to the list
+		parentList.get_Items().add(newItem);
+	}
+
+	$(document.documentElement)
+
+		// Create a new item when the add link is clicked
+		.on("click", ".board-list-additem a", function() {
+			// Hide link and show input
+			$(this).hide().prev().show().focus();
+		})
+
+		// Create the new item and continue when the user presses the tab key
+		.on("keydown", ".board-list-additem input[type=text]", function(e) {
+
+			// Check for TAB to signify completion
+			if (e.keyCode == jQuery.ui.keyCode.TAB) {
+				var $this = $(this);
+				var textEntered = $this.val();
+				if (!textEntered) {
+					alert("Enter description");
+				}
+				else {
+					// Add the new item
+					addNewItem.call(this, textEntered);
+				}
+
+				// Clear the input
+				$this.val("");
+
+				// Stop default tab behavior
+				e.stopPropagation();
+				return false;
+			}
+
+		})
+
+		// Create the new item when the user presses the enter key
+		.on("keypress", ".board-list-additem input[type=text]", function(e) {
+
+			// Check for ENTER to signify completion
+			if (e.keyCode == jQuery.ui.keyCode.ENTER) {
+				var $this = $(this);
+				var textEntered = $this.val();
+				if (!textEntered) {
+					alert("Enter description");
+				}
+				else {
+					// Add the new item
+					addNewItem.call(this, textEntered);
+
+					// Clear the input
+					$this.val("");
+
+					// Hide input and show link
+					$this.hide().next().show();
+					return false;
+				}
+			}
+
+		})
+
+		// Hide the add field when the user leaves
+		.on("blur", ".board-list-additem input[type=text]", function(e) {
+			// Hide input and show link
+			$(this).hide().next().show();
+			return false;
+		});
+
+}());
+				</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+
+		<!-- Snippet 1 -->
+		<li>Append the following code snippet in <strong>Views\Home\Index.cshtml</strong> under the list of script references:
+			<div class="snippet">
+<pre>&lt;script src="@Url.Content("~/scripts/board-list-additem.js")"&gt;&lt;/script&gt;</pre>
+			</div>
+			<input type="button" class="copy-snippet" value="Copy"></input>
+		</li>
+	</ol>
+</body>
